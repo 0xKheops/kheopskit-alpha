@@ -1,0 +1,20 @@
+{
+  "name": "@kheopskit/core",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsup --dev",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "rxjs": ">=7.8.0"
+  },
+  "devDependencies": {
+    "rxjs": "^7.8.2"
+  }
+}
