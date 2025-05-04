@@ -1,3 +1,5 @@
+export * from "./polkadot";
+
 export const connect = () => {
-  console.log("connect");
+  console.log("connect y");
 };

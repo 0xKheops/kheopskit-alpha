@@ -2,19 +2,49 @@
   "name": "@kheopskit/core",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsup --dev",
-    "build": "tsup"
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "rxjs": ">=7.8.0"
+    "rxjs": ">=7.8.0",
+    "polkadot-api": ">=1.10.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.16",
+    "polkadot-api": "^1.10.1",
     "rxjs": "^7.8.2"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true,
+    "dts": true,
+    "format": [
+      "esm",
+      "cjs"
+    ],
+    "target": "es2020"
   }
 }

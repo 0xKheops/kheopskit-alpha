@@ -1,0 +1,10 @@
+import { isEthereumAddress } from "./isEthereumAddress";
+import { isSs58Address } from "../polkadot/isSs58Address";
+import type { AccountAddressType } from "./types";
+
+export const getAccountAddressType = (address: string): AccountAddressType => {
+  if (address.startsWith("0x")) {
+    if (isEthereumAddress(address)) return "ethereum";
+  } else if (isSs58Address(address)) return "ss58";
+  throw new Error("Invalid address");
+};

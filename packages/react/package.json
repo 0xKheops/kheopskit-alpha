@@ -1,12 +1,55 @@
 {
-  "name": "react",
+  "name": "@kheopskit/react",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "peerDependencies": {
+    "rxjs": ">=7.8.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "polkadot-api": ">=1.10.0"
+  },
+  "dependencies": {
+    "@kheopskit/core": "workspace:*",
+    "@react-rxjs/core": "^0.10.8"
+  },
+  "devDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "polkadot-api": "^1.10.0"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true,
+    "dts": true,
+    "format": [
+      "esm",
+      "cjs"
+    ],
+    "target": "es2020"
+  }
 }
