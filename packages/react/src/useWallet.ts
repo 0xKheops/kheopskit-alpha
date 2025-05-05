@@ -2,9 +2,9 @@ import { useCallback, useEffect } from "react";
 import { bind } from "@react-rxjs/core";
 import { polkadot } from "@kheopskit/core";
 
-const [useInjectedExtensionsIds] = bind(polkadot.injectedExtensionIds$, []);
-const [useConnectedExtensions] = bind(polkadot.connectedExtensions$, []);
-const [useConnectedAccounts] = bind(polkadot.accounts$, []);
+const [useInjectedExtensionsIds] = bind(polkadot.injectedExtensionIds$);
+const [useConnectedExtensions] = bind(polkadot.connectedExtensions$);
+const [useConnectedAccounts] = bind(polkadot.accounts$);
 
 export const useWallets = () => {
   // const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
@@ -26,16 +26,16 @@ export const useWallets = () => {
   }, []);
 
   useEffect(() => {
-    console.log("injectedExtensionsIds", injectedExtensionIds);
-  }, []);
+    console.log("[useWallets] injectedExtensionsIds", injectedExtensionIds);
+  }, [injectedExtensionIds]);
 
   useEffect(() => {
-    console.log("connectedExtensions", connectedExtensions);
-  }, []);
+    console.log("[useWallets] connectedExtensions", connectedExtensions);
+  }, [connectedExtensions]);
 
   useEffect(() => {
-    console.log("accounts", accounts);
-  }, []);
+    console.log("[useWallets] accounts", accounts);
+  }, [accounts]);
 
   return {
     injectedExtensionIds,

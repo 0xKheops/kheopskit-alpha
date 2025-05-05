@@ -1,10 +1,13 @@
 import { getAccountAddressType } from "@/utils/getAccountAddressType";
-import { AccountAddressType } from "@/utils/types";
+import type { AccountAddressType } from "@/utils/types";
 import { entries } from "lodash";
-import { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
+import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import { combineLatest, distinctUntilChanged, map, shareReplay } from "rxjs";
 import { accountsByExtension$ } from "./extensions";
-import { getInjectedAccountId, InjectedAccountId } from "./injectedAccountId";
+import {
+  type InjectedAccountId,
+  getInjectedAccountId,
+} from "./injectedAccountId";
 
 export type DotInjectedAccount = InjectedPolkadotAccount & {
   id: InjectedAccountId;
@@ -49,4 +52,6 @@ export const getAccount$ = (id: string) => {
   );
 };
 
-accounts$.subscribe(console.log);
+accounts$.subscribe((val) => {
+  console.log("accounts$ emit", val);
+});
