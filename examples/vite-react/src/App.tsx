@@ -21,7 +21,12 @@ function App() {
           Connect Polkadot or Ethereum
         </button>
       </div>
-      <InjectedPolkadotWallets />
+      <div style={{ margin: "20px 0" }}>
+        <InjectedPolkadotWallets />
+      </div>
+      <div>
+        <InjectedAccounts />
+      </div>
     </>
   );
 }
@@ -34,6 +39,8 @@ const InjectedPolkadotWallets = () => {
     connect,
     disconnect,
   } = useWallets();
+
+  console.log("[dapp] accounts", accounts.length);
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
@@ -56,6 +63,21 @@ const InjectedPolkadotWallets = () => {
               </button>
             )}
           </div>
+        </Fragment>
+      ))}
+    </div>
+  );
+};
+
+const InjectedAccounts = () => {
+  const { accounts } = useWallets();
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+      {accounts.map((acc) => (
+        <Fragment key={acc.id}>
+          <div>{acc.id}</div>
+          <div>{acc.name}</div>
         </Fragment>
       ))}
     </div>

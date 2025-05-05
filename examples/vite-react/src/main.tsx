@@ -6,10 +6,12 @@ import { Subscribe } from "@react-rxjs/core";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Suspense fallback="LOADING">
-      <Subscribe>
-        <App />
-      </Subscribe>
-    </Suspense>
+    <Subscribe>
+      <App />
+    </Subscribe>
   </StrictMode>
 );
+
+// const SuspenseMonitor = () => {
+//   return null;
+// };
