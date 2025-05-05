@@ -1,4 +1,4 @@
-export * from "./polkadot";
+export * from "./api";
 export * from "./utils";
 
 export const connect = () => {

@@ -24,41 +24,43 @@ function App() {
       <div style={{ margin: "20px 0" }}>
         <InjectedPolkadotWallets />
       </div>
-      <div>
+      {/* <div>
         <InjectedAccounts />
-      </div>
+      </div> */}
     </>
   );
 }
 
 const InjectedPolkadotWallets = () => {
   const {
-    injectedExtensionIds,
-    connectedExtensions,
+    polkadotInjectedExtensionIds,
+    polkadotConnectedExtensionIds,
     accounts,
-    connect,
-    disconnect,
+    connectPolkadotExtension,
+    disconnectPolkadotExtension,
   } = useWallets();
 
   console.log("[dapp] accounts", accounts.length);
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
-      {injectedExtensionIds.map((id) => (
+      {polkadotInjectedExtensionIds.map((id) => (
         <Fragment key={id}>
           <div>{id}</div>
+          <div>{accounts.filter((a) => a.wallet === id).length}</div>
           <div>
-            {connectedExtensions.some((e) => e.name === id)
-              ? accounts.filter((a) => a.wallet === id).length
-              : "N/A"}
-          </div>
-          <div>
-            {connectedExtensions.some((e) => e.name === id) ? (
-              <button type="button" onClick={() => disconnect(id)}>
+            {polkadotConnectedExtensionIds.includes(id) ? (
+              <button
+                type="button"
+                onClick={() => disconnectPolkadotExtension(id)}
+              >
                 disconnect
               </button>
             ) : (
-              <button type="button" onClick={() => connect(id)}>
+              <button
+                type="button"
+                onClick={() => connectPolkadotExtension(id)}
+              >
                 connect
               </button>
             )}
@@ -69,19 +71,19 @@ const InjectedPolkadotWallets = () => {
   );
 };
 
-const InjectedAccounts = () => {
-  const { accounts } = useWallets();
+// const InjectedAccounts = () => {
+//   const { accounts } = useWallets();
 
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-      {accounts.map((acc) => (
-        <Fragment key={acc.id}>
-          <div>{acc.id}</div>
-          <div>{acc.name}</div>
-        </Fragment>
-      ))}
-    </div>
-  );
-};
+//   return (
+//     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+//       {accounts.map((acc) => (
+//         <Fragment key={acc.id}>
+//           <div>{acc.id}</div>
+//           <div>{acc.name}</div>
+//         </Fragment>
+//       ))}
+//     </div>
+//   );
+// };
 
 export default App;

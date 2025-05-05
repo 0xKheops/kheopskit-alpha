@@ -1,47 +1,35 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { bind } from "@react-rxjs/core";
-import { polkadot } from "@kheopskit/core";
+import { kheopskit } from "@kheopskit/core";
 
-const [useInjectedExtensionsIds] = bind(polkadot.injectedExtensionIds$);
-const [useConnectedExtensions] = bind(polkadot.connectedExtensions$);
-const [useConnectedAccounts] = bind(polkadot.accounts$);
+const [usePolkadotInjectedExtensionIds] = bind(
+  kheopskit.polkadotInjectedExtensionIds$
+);
+const [usePolkadotConnectedExtensionIds] = bind(
+  kheopskit.polkadotConnectedExtensionIds$
+);
+const [useAccounts] = bind(kheopskit.accounts$);
 
 export const useWallets = () => {
-  // const [, setConnectedExtensionIds] = useSetting("connectedExtensionIds");
+  const polkadotInjectedExtensionIds = usePolkadotInjectedExtensionIds();
+  const polkadotConnectedExtensionIds = usePolkadotConnectedExtensionIds();
+  const accounts = useAccounts();
 
-  const injectedExtensionIds = useInjectedExtensionsIds();
-  const connectedExtensions = useConnectedExtensions();
-  const accounts = useConnectedAccounts();
+  const connectPolkadotExtension = useCallback(
+    (name: string) => kheopskit.connectPolkadotExtension(name),
+    []
+  );
 
-  const connect = useCallback((name: string) => {
-    polkadot.connectExtension(name);
-    // setConnectedExtensionIds((prev) => [
-    // 	...prev.filter((n) => n !== name),
-    // 	name,
-    // ]);
-  }, []);
-
-  const disconnect = useCallback((name: string) => {
-    polkadot.disconnectExtension(name);
-  }, []);
-
-  useEffect(() => {
-    console.log("[useWallets] injectedExtensionsIds", injectedExtensionIds);
-  }, [injectedExtensionIds]);
-
-  useEffect(() => {
-    console.log("[useWallets] connectedExtensions", connectedExtensions);
-  }, [connectedExtensions]);
-
-  useEffect(() => {
-    console.log("[useWallets] accounts", accounts);
-  }, [accounts]);
+  const disconnectPolkadotExtension = useCallback(
+    (name: string) => kheopskit.disconnectPolkadotExtension(name),
+    []
+  );
 
   return {
-    injectedExtensionIds,
-    connectedExtensions,
-    connect,
-    disconnect,
+    polkadotInjectedExtensionIds,
+    polkadotConnectedExtensionIds,
+    connectPolkadotExtension,
+    disconnectPolkadotExtension,
     accounts,
   };
 };
