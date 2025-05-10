@@ -1,15 +1,19 @@
-import { polkadotInjectedExtensionIds$ } from "@/polkadot/extensions.injected";
-import { combineLatest, map, shareReplay } from "rxjs";
-import { store } from "./store";
 import {
   connectPolkadotInjectedExtension,
   disconnectPolkadotInjectedExtension,
   polkadotConnectedExtensions$,
 } from "@/polkadot/extensions.connect";
-import { polkadotConnectedExtensionIds$ } from "@/polkadot/extensions.store";
-import { uniq } from "lodash";
-import { sortWallets } from "@/utils/sortWallets";
+import { polkadotInjectedExtensionIds$ } from "@/polkadot/extensions.injected";
 import { polkadotAutoReconnect } from "@/polkadot/extensions.reconnect";
+import { polkadotConnectedExtensionIds$ } from "@/polkadot/extensions.store";
+import { isTruthy } from "@/utils";
+import { getWalletId } from "@/utils/injectedWalletId";
+import { sortWallets } from "@/utils/sortWallets";
+import { uniq } from "lodash";
+import { combineLatest, map, shareReplay } from "rxjs";
+import { setConfig } from "./config";
+import { store } from "./store";
+import type { Wallet } from "./types";
 
 const ethereumConnectedExtensionIds$ = store.observable.pipe(
   map((s) => s.ethereum?.connectedExtensionIds ?? []),
@@ -41,38 +45,28 @@ const getAccount$ = (id: string) =>
     )
   );
 
-type Wallet = {
-  id: string;
-  platform: "polkadot" | "ethereum";
-  type: "injected" | "walletconnect" | "ledger" | "polkadot-vault";
-  name: string;
-  status: "connected" | "injected" | "unavailable";
-  connect: () => Promise<void>;
-  disconnect: () => void;
-};
+// TODO construct only from injectedExtensions$ and storedExtensions$
 
 const polkadotWallets$ = combineLatest([
   polkadotInjectedExtensionIds$,
   polkadotConnectedExtensions$,
   polkadotConnectedExtensionIds$,
 ]).pipe(
-  map(
-    ([
-      injectedExtensionIds,
-      connectedExtensions,
-      connectedExtensionIds,
-    ]): Wallet[] => {
-      const knownExtensionIds = uniq([
-        ...injectedExtensionIds,
-        ...connectedExtensionIds,
-        ...connectedExtensions.keys(),
-      ]);
+  map(([injectedExtensionIds, connectedExtensions, connectedExtensionIds]) => {
+    const knownExtensionIds = uniq([
+      ...injectedExtensionIds,
+      ...connectedExtensionIds,
+      ...connectedExtensions.keys(),
+    ]);
 
-      return knownExtensionIds.sort(sortWallets).map((id) => {
-        const extension = connectedExtensions.get(id);
+    return knownExtensionIds
+      .sort(sortWallets)
+      .map((id): Wallet | null => {
+        const connectedExtension = connectedExtensions.get(id);
 
         const connect = async () => {
-          if (extension) throw new Error(`Extension ${id} already connected`);
+          if (connectedExtension)
+            throw new Error(`Extension ${id} already connected`);
           if (!injectedExtensionIds.includes(id))
             throw new Error(`Extension ${id} not found`);
 
@@ -80,17 +74,20 @@ const polkadotWallets$ = combineLatest([
         };
 
         const disconnect = () => {
-          if (!extension) throw new Error(`Extension ${id} is not connected`);
+          if (!connectedExtension)
+            throw new Error(`Extension ${id} is not connected`);
 
           disconnectPolkadotInjectedExtension(id);
         };
 
+        if (!connectedExtension) return null;
+
         return {
-          id,
+          id: getWalletId("poladot", connectedExtension.extension.name),
           platform: "polkadot",
           type: "injected",
-          name: extension?.extension.name ?? id,
-          status: extension
+          name: connectedExtension.extension.name,
+          status: connectedExtension
             ? "connected"
             : injectedExtensionIds.includes(id)
             ? "injected"
@@ -98,9 +95,9 @@ const polkadotWallets$ = combineLatest([
           connect,
           disconnect,
         };
-      });
-    }
-  ),
+      })
+      .filter(isTruthy);
+  }),
   shareReplay(1)
 );
 
@@ -123,4 +120,6 @@ export const kheopskit = {
   getAccount$,
 
   polkadotWallets$,
+
+  init: setConfig,
 };

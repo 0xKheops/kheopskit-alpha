@@ -9,6 +9,10 @@
 //   getInjectedAccountId,
 // } from "./injectedAccountId";
 
+import { map } from "rxjs";
+import { polkadotConnectedExtensions$ } from "./extensions.connect";
+import { getInjectedAccountId } from "@/utils";
+
 // export type DotInjectedAccount = InjectedPolkadotAccount & {
 //   id: InjectedAccountId;
 //   wallet: string;
@@ -55,3 +59,16 @@
 // accounts$.subscribe((val) => {
 //   console.log("accounts$ emit", val);
 // });
+
+const connectedAccounts = polkadotConnectedExtensions$.pipe(
+  map((extensionsMap) =>
+    Array.from(extensionsMap.entries()).flatMap(([wallet, extension]) =>
+      extension.accounts.map((account) => ({
+        id: getInjectedAccountId(wallet, account.address),
+        wallet,
+        platform: "polkadot",
+        ...account,
+      }))
+    )
+  )
+);

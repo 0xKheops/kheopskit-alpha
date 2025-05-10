@@ -1,3 +1,5 @@
+import type { WalletPlatform } from "@/utils";
+import type { WalletId } from "@/utils/injectedWalletId";
 import type { InjectedAccount, PolkadotSigner } from "polkadot-api/pjs-signer";
 
 type AccountStorageBase = {
@@ -36,4 +38,14 @@ export type KheopskitStoreData = {
 
 export type KheopskitConfig = {
   autoReconnect?: boolean;
+};
+
+export type Wallet = {
+  id: WalletId;
+  platform: WalletPlatform;
+  type: "injected" | "walletconnect" | "ledger" | "polkadot-vault";
+  name: string;
+  status: "connected" | "injected" | "unavailable";
+  connect: () => Promise<void>;
+  disconnect: () => void;
 };
