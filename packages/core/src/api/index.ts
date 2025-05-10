@@ -7,7 +7,7 @@ import {
 import { polkadotInjectedWalletIds$ } from "@/polkadot/extensions.injected";
 import { polkadotAutoReconnect } from "@/polkadot/extensions.reconnect";
 import { isTruthy } from "@/utils";
-import { getWalletId } from "@/utils/injectedWalletId";
+import { parseWalletId } from "@/utils/injectedWalletId";
 import { uniq } from "lodash";
 import { combineLatest, map, shareReplay } from "rxjs";
 import { autoReconnect$, setConfig } from "./config";
@@ -51,12 +51,6 @@ const polkadotWallets$ = combineLatest([
   store.observable.pipe(map((s) => s.autoReconnect ?? [])),
 ]).pipe(
   map(([injectedWalletIds, enabledExtensions, enabledExtensionIds]) => {
-    console.log({
-      injectedWalletIds,
-      enabledExtensions,
-      enabledExtensionIds,
-    });
-
     const knownExtensionIds = uniq([
       ...injectedWalletIds,
       ...enabledExtensions.keys(),
@@ -66,38 +60,40 @@ const polkadotWallets$ = combineLatest([
     console.log("knownExtensionIds", knownExtensionIds);
 
     return knownExtensionIds
-      .map((id): Wallet | null => {
-        const enabledExtension = enabledExtensions.get(id);
+      .map((walletId): Wallet | null => {
+        const enabledExtension = enabledExtensions.get(walletId);
 
         const connect = async () => {
           if (enabledExtension)
-            throw new Error(`Extension ${id} already connected`);
-          if (!injectedWalletIds.includes(id))
-            throw new Error(`Extension ${id} not found`);
+            throw new Error(`Extension ${walletId} already connected`);
+          if (!injectedWalletIds.includes(walletId))
+            throw new Error(`Extension ${walletId} not found`);
 
-          await connectPolkadotInjectedExtension(id);
+          await connectPolkadotInjectedExtension(walletId);
         };
 
         const disconnect = () => {
           if (!enabledExtension)
-            throw new Error(`Extension ${id} is not connected`);
+            throw new Error(`Extension ${walletId} is not connected`);
 
-          disconnectPolkadotInjectedExtension(id);
+          disconnectPolkadotInjectedExtension(walletId);
         };
 
         console.log({ enabledExtension });
 
         const status = enabledExtension
           ? "connected"
-          : injectedWalletIds.includes(id)
+          : injectedWalletIds.includes(walletId)
           ? "injected"
           : "unavailable";
 
+        const { platform, name } = parseWalletId(walletId);
+
         return {
-          id: getWalletId("polkadot", id),
-          platform: "polkadot",
+          id: walletId,
+          platform,
           type: "injected",
-          name: id,
+          name,
           status,
           connect,
           disconnect,
@@ -122,19 +118,9 @@ autoReconnect$.subscribe((autoReconnect) => {
 // TODO combine all observables
 export const isLoaded$ = combineLatest(autoReconnect$);
 
-// auto reconnect to injected extensions
+// TODO transform in a method that takes config as input ?
 export const kheopskit = {
-  // polkadotEnabledExtensionIds$: polkadotStoredEnabledExtensionIds$,
-  //   ethereumEnabledExtensionIds$: ethereumEnabledExtensionIds$,
-
-  // polkadotInjectedExtensionIds$,
-
   accounts$: connectedAccounts$,
-  // polkadotAccounts$,
-  // ethereumAccounts$,
-  // getAccount$,
-
   polkadotWallets$,
-
   init: setConfig,
 };
