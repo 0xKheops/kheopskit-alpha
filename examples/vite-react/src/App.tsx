@@ -1,89 +1,70 @@
-import { connect } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
-import "./App.css";
-import { Fragment, useCallback } from "react";
+import { Button } from "./components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./components/ui/table";
 
 function App() {
-  const handleClick = useCallback(() => {
-    connect();
-  }, []);
+  // const handleClick = useCallback(() => {
+  //   connect();
+  // }, []);
 
   return (
-    <>
-      <div className="connect-buttons">
-        <button type="button" onClick={handleClick}>
-          Connect Polkadot
-        </button>
-        <button type="button" onClick={handleClick}>
-          Connect Ethereum
-        </button>
-        <button type="button" onClick={handleClick}>
-          Connect Polkadot or Ethereum
-        </button>
-      </div>
-      <div style={{ margin: "20px 0" }}>
+    <div className="container">
+      {/* <div className="grid grid-cols-3 gap-4">
+        <Button onClick={handleClick}>Connect Polkadot</Button>
+        <Button onClick={handleClick}>Connect Ethereum</Button>
+        <Button onClick={handleClick}>Connect Polkadot or Ethereum</Button>
+      </div> */}
+      <div>
         <InjectedPolkadotWallets />
       </div>
-      {/* <div>
-        <InjectedAccounts />
-      </div> */}
-    </>
+    </div>
   );
 }
 
 const InjectedPolkadotWallets = () => {
-  const {
-    polkadotInjectedExtensionIds,
-    polkadotConnectedExtensionIds,
-    accounts,
-    connectPolkadotExtension,
-    disconnectPolkadotExtension,
-  } = useWallets();
-
-  console.log("[dapp] accounts", accounts.length);
+  const { wallets, accounts } = useWallets();
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
-      {polkadotInjectedExtensionIds.map((id) => (
-        <Fragment key={id}>
-          <div>{id}</div>
-          <div>{accounts.filter((a) => a.wallet === id).length}</div>
-          <div>
-            {polkadotConnectedExtensionIds.includes(id) ? (
-              <button
-                type="button"
-                onClick={() => disconnectPolkadotExtension(id)}
-              >
-                disconnect
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => connectPolkadotExtension(id)}
-              >
-                connect
-              </button>
-            )}
-          </div>
-        </Fragment>
-      ))}
-    </div>
+    <Table className="max-w-xl">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Wallet</TableHead>
+          <TableHead className="text-right">Accounts</TableHead>
+          <TableHead className="text-right">Action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {wallets.map((wallet) => (
+          <TableRow key={wallet.id}>
+            <TableCell>{wallet.name}</TableCell>
+            <TableCell className="text-right">
+              {accounts.filter((a) => a.wallet === wallet.id).length}
+            </TableCell>
+            <TableCell className="text-right">
+              {wallet.status === "connected" && (
+                <Button className="w-28" onClick={wallet.disconnect}>
+                  Disconnect
+                </Button>
+              )}
+              {wallet.status === "injected" && (
+                <Button className="w-28" onClick={wallet.connect}>
+                  Connect
+                </Button>
+              )}
+              {wallet.status === "unavailable" && <div>Unavailable</div>}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
-
-// const InjectedAccounts = () => {
-//   const { accounts } = useWallets();
-
-//   return (
-//     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-//       {accounts.map((acc) => (
-//         <Fragment key={acc.id}>
-//           <div>{acc.id}</div>
-//           <div>{acc.name}</div>
-//         </Fragment>
-//       ))}
-//     </div>
-//   );
-// };
 
 export default App;

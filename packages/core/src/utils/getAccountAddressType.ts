@@ -1,5 +1,5 @@
 import { isEthereumAddress } from "./isEthereumAddress";
-import { isSs58Address } from "../polkadot/isSs58Address";
+import { isSs58Address } from "./isSs58Address";
 import type { AccountAddressType } from "./types";
 
 export const getAccountAddressType = (address: string): AccountAddressType => {

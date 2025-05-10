@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently -k -n CORE,REACT,APP -c yellow,cyan,green \"pnpm --filter @kheopskit/core dev\" \"pnpm --filter @kheopskit/react dev\" \"pnpm --filter vite-react dev\""
+    "dev": "concurrently -k -n CORE,REACT,APP -c yellow,cyan,green \"pnpm --filter @kheopskit/core dev\" \"pnpm --filter @kheopskit/react dev\" \"pnpm --filter vite-react dev\"",
+    "build": "pnpm --filter @kheopskit/core build && pnpm --filter @kheopskit/react build"
   },
   "keywords": [],
   "author": "",

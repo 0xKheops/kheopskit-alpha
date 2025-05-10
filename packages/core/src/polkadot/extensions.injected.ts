@@ -1,5 +1,5 @@
 import { getInjectedExtensions } from "polkadot-api/pjs-signer";
-import { sortWallets } from "./sortWallets";
+import { sortWallets } from "../utils/sortWallets";
 import { BehaviorSubject, mergeMap, of, timer } from "rxjs";
 import { isEqual } from "lodash";
 
@@ -10,15 +10,8 @@ const injectedExtensionIdsSubject = new BehaviorSubject<string[]>(
   getInjectedWalletsIds()
 );
 
-export const polkadotInjectedExtensionIds$ =
-  injectedExtensionIdsSubject.asObservable();
-
-polkadotInjectedExtensionIds$.subscribe((val) => {
-  console.log("injectedExtensionIds$", val);
-});
-
 // poll for wallets that are slow to register
-of(100, 500, 1000)
+of(0, 200, 500, 1000)
   .pipe(mergeMap((time) => timer(time)))
   .subscribe(() => {
     const ids = getInjectedWalletsIds();
@@ -26,3 +19,10 @@ of(100, 500, 1000)
       injectedExtensionIdsSubject.next(ids);
     }
   });
+
+export const polkadotInjectedExtensionIds$ =
+  injectedExtensionIdsSubject.asObservable();
+
+polkadotInjectedExtensionIds$.subscribe((val) => {
+  console.log("injectedExtensionIds$", val);
+});
