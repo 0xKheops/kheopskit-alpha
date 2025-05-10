@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@kheopskit/core': link:packages/core
+  '@kheopskit/react': link:packages/react
+
 importers:
 
   .:
@@ -11,6 +15,12 @@ importers:
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
+      '@kheopskit/core':
+        specifier: link:packages/core
+        version: link:packages/core
+      '@kheopskit/react':
+        specifier: link:packages/react
+        version: link:packages/react
     devDependencies:
       concurrently:
         specifier: ^9.1.2
@@ -25,10 +35,10 @@ importers:
   examples/vite-react:
     dependencies:
       '@kheopskit/core':
-        specifier: workspace:*
+        specifier: link:../../packages/core
         version: link:../../packages/core
       '@kheopskit/react':
-        specifier: workspace:*
+        specifier: link:../../packages/react
         version: link:../../packages/react
       '@radix-ui/react-slot':
         specifier: ^1.2.2
@@ -123,7 +133,7 @@ importers:
   packages/react:
     dependencies:
       '@kheopskit/core':
-        specifier: workspace:*
+        specifier: link:../core
         version: link:../core
       '@react-rxjs/core':
         specifier: ^0.10.8

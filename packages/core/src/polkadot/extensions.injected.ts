@@ -1,28 +1,18 @@
-import { getInjectedExtensions } from "polkadot-api/pjs-signer";
-import { sortWallets } from "../utils/sortWallets";
-import { BehaviorSubject, mergeMap, of, timer } from "rxjs";
+import { getWalletId, type WalletId } from "@/utils/injectedWalletId";
 import { isEqual } from "lodash";
+import { getInjectedExtensions } from "polkadot-api/pjs-signer";
+import { distinctUntilChanged, map, mergeMap, of, timer } from "rxjs";
 
 const getInjectedWalletsIds = () =>
-  getInjectedExtensions()?.concat().sort(sortWallets) ?? [];
+  getInjectedExtensions().map((name) => getWalletId("polkadot", name));
 
-const injectedExtensionIdsSubject = new BehaviorSubject<string[]>(
-  getInjectedWalletsIds()
-);
+export const polkadotInjectedWalletIds$ = of(0, 200, 500, 1000) // poll for wallets that register after page load
+  .pipe(
+    mergeMap((time) => timer(time)),
+    map(() => getInjectedWalletsIds()),
+    distinctUntilChanged<WalletId[]>(isEqual)
+  );
 
-// poll for wallets that are slow to register
-of(0, 200, 500, 1000)
-  .pipe(mergeMap((time) => timer(time)))
-  .subscribe(() => {
-    const ids = getInjectedWalletsIds();
-    if (!isEqual(ids, injectedExtensionIdsSubject.value)) {
-      injectedExtensionIdsSubject.next(ids);
-    }
-  });
-
-export const polkadotInjectedExtensionIds$ =
-  injectedExtensionIdsSubject.asObservable();
-
-polkadotInjectedExtensionIds$.subscribe((val) => {
+polkadotInjectedWalletIds$.subscribe((val) => {
   console.log("injectedExtensionIds$", val);
 });

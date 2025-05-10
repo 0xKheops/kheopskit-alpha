@@ -1,16 +1,21 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import { Subscribe } from "@react-rxjs/core";
+import { KheopskitProvider } from "@kheopskit/react";
+import type { KheopskitConfig } from "@kheopskit/core";
 
 const rootElement = document.getElementById("root");
+
+const config: KheopskitConfig = {
+  autoReconnect: true,
+};
 
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <Subscribe>
+      <KheopskitProvider config={config}>
         <App />
-      </Subscribe>
+      </KheopskitProvider>
     </StrictMode>
   );
 } else {

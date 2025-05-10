@@ -26,18 +26,21 @@ export type Account<T extends AccountStorage> = T & {
 };
 
 export type PlatformData<T extends AccountStorageBase> = {
-  connectedExtensionIds: string[];
+  enabledExtensionIds: string[];
   accounts: T[];
   defaultAccountId: string | null;
 };
 
 export type KheopskitStoreData = {
-  polkadot?: PlatformData<PolkadotAccountStorage>;
-  ethereum?: PlatformData<EthereumAccountStorage>;
+  // polkadot?: PlatformData<PolkadotAccountStorage>;
+  // ethereum?: PlatformData<EthereumAccountStorage>;
+  autoReconnect?: WalletId[];
 };
 
 export type KheopskitConfig = {
   autoReconnect?: boolean;
+  polkadot?: boolean; // maybe provide more infos here
+  ethereum?: boolean; // maybe provide more infos here
 };
 
 export type Wallet = {
