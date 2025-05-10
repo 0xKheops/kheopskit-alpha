@@ -11,3 +11,4 @@ export * from "./sleep";
 export * from "./throwAfter";
 export * from "./types";
 export * from "./sortWallets";
+export * from "./isWalletPlatform";

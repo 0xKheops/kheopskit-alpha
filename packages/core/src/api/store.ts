@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS: KheopskitStoreData = {};
 
 const storage = createStore(LOCAL_STORAGE_KEY, DEFAULT_SETTINGS);
 
-storage.observable.subscribe((val) => console.log("kheopskit store", val));
+// storage.observable.subscribe((val) => console.log("kheopskit store", val));
 
 export const addEnabledWalletId = (walletId: WalletId) => {
   parseWalletId(walletId); // validate walletId

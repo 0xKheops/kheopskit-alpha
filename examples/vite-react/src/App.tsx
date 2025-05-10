@@ -48,6 +48,8 @@ const WalletsCard = () => (
 const Wallets = () => {
   const { wallets, accounts } = useWallets();
 
+  console.log({ wallets, accounts });
+
   return (
     <Table className="w-xl">
       <TableHeader>
@@ -64,20 +66,18 @@ const Wallets = () => {
             <TableCell>{wallet.platform}</TableCell>
             <TableCell>{wallet.name}</TableCell>
             <TableCell className="text-right">
-              {accounts.filter((a) => a.wallet === wallet.id).length}
+              {accounts.filter((a) => a.wallet === wallet.name).length}
             </TableCell>
             <TableCell className="text-right">
-              {wallet.status === "connected" && (
+              {wallet.isEnabled ? (
                 <Button className="w-28" onClick={wallet.disconnect}>
                   Disconnect
                 </Button>
-              )}
-              {wallet.status === "injected" && (
+              ) : (
                 <Button className="w-28" onClick={wallet.connect}>
                   Connect
                 </Button>
               )}
-              {wallet.status === "unavailable" && <div>Unavailable</div>}
             </TableCell>
           </TableRow>
         ))}
@@ -118,7 +118,9 @@ const Accounts = () => {
           <TableRow key={account.id}>
             <TableCell>{account.platform}</TableCell>
             <TableCell>{account.wallet}</TableCell>
-            <TableCell className="text-right">{account.name}</TableCell>
+            <TableCell className="text-right">
+              {account.platform === "polkadot" ? account.name : null}
+            </TableCell>
             <TableCell className="text-right font-mono">
               {shortenAddress(account.address)}
             </TableCell>

@@ -8,6 +8,7 @@ const rootElement = document.getElementById("root");
 
 const config: KheopskitConfig = {
   autoReconnect: true,
+  platforms: ["polkadot", "ethereum"],
 };
 
 if (rootElement) {

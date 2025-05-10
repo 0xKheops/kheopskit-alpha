@@ -1,21 +1,19 @@
 import { kheopskit } from "@kheopskit/core";
 import { bind } from "@react-rxjs/core";
-import { useMemo } from "react";
 
 const [useAccounts] = bind(kheopskit.accounts$);
-const [usePolkadotWallets] = bind(kheopskit.polkadotWallets$);
+const [useAllWallets] = bind(kheopskit.wallets$);
 
 export const useWallets = () => {
-  const polkadotWallets = usePolkadotWallets();
-
+  const wallets = useAllWallets();
   const accounts = useAccounts();
 
-  const wallets = useMemo(() => {
-    return [
-      ...polkadotWallets,
-      // ...ethereumWallets
-    ];
-  }, [polkadotWallets]);
+  // const wallets = useMemo(() => {
+  //   return [
+  //     ...polkadotWallets,
+  //     // ...ethereumWallets
+  //   ];
+  // }, [polkadotWallets]);
 
   return {
     wallets,
