@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Github } from "lucide-react";
+import { Code, Github } from "lucide-react";
 import type { FC, PropsWithChildren, ReactNode } from "react";
 
 export const AppBlock: FC<
@@ -29,7 +29,7 @@ export const AppBlock: FC<
       <CardFooter className="justify-end">
         <Button asChild variant="secondary">
           <a href={codeUrl} target="_blank" rel="noreferrer">
-            <Github /> Code on Github
+            <Code />
           </a>
         </Button>
       </CardFooter>

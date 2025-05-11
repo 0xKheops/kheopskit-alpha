@@ -106,7 +106,7 @@ kheopskit$.subscribe(({ wallets, accounts }) => {
 
 ## Roadmap
 
-- [ ] Support for injected accounts
+- [ ] Initial release with injected accounts support
 - [ ] Support for WalletConnect
 - [ ] UI components
 - [ ] Documentation

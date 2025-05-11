@@ -8,6 +8,8 @@ import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/lib/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Wagmi } from "./blocks/Wagmi";
+import { Github } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const queryClient = new QueryClient();
 
@@ -32,14 +34,26 @@ export const App = () => {
 const AppContent = () => (
   <div className="container mx-auto flex flex-col gap-8 items-center p-8 max-w-3xl">
     <div className="text-center space-y-2">
-      <h1 className="text-3xl font-bold">Kheopskit demo</h1>
+      <h1 className="text-3xl font-bold">Kheopskit Playground</h1>
       <div className="text-sm text-muted-foreground">
-        Designed for multi platform/wallets/accounts DApps
+        Library for multi platforms & wallets DApps
       </div>
     </div>
     <Config />
     <Wallets />
     <Accounts />
     <Wagmi />
+    <Footer />
+  </div>
+);
+
+const Footer = () => (
+  <div>
+    <Button asChild variant="ghost">
+      <a href="https://github.com/0xKheops/kheopskit-alpha">
+        <Github />
+        Github
+      </a>
+    </Button>
   </div>
 );
