@@ -8,6 +8,6 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "linked": [["kheopskit", "@kheopskit/core", "@kheopskit/react"]],
+  "linked": [["@kheopskit/core", "@kheopskit/react"]],
   "ignore": ["vite-react"]
 }
