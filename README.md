@@ -7,6 +7,8 @@ KheopsKit is a monorepo designed to simplify the development of Polkadot DApps. 
 - Support both Polkadot and Ethereum wallets.
 - Handle identical accounts injected by multiple wallets.
 
+Try it on the [interactive playground](https://kheopskit-alpha.pages.dev/)
+
 ## Features
 
 - **Multi-wallet support**: Easily interact with both Polkadot and Ethereum wallets.
