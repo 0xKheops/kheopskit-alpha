@@ -1,6 +1,6 @@
-# Kheopskit Monorepo
+# Kheopskit
 
-Kheopskit is a monorepo designed to simplify the development of Polkadot DApps. It provides tools to:
+Kheopskit is a library designed to simplify the development of Polkadot DApps. It provides tools to:
 
 - List all installed wallets and connect/disconnect them.
 - List all accounts from those wallets.
@@ -96,9 +96,9 @@ const config = {
   platforms: ["polkadot", "ethereum"],
   autoReconnect: true,
 };
-const Kheopskit$ = getKheopskit$(config);
+const kheopskit$ = getKheopskit$(config);
 
-Kheopskit$.subscribe(({ wallets, accounts }) => {
+kheopskit$.subscribe(({ wallets, accounts }) => {
   console.log("Wallets:", wallets);
   console.log("Accounts:", accounts);
 });
