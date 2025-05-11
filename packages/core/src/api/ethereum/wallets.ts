@@ -1,11 +1,7 @@
 import { store } from "@/api/store";
 import type { EthereumWallet } from "@/api/types";
-import { getWalletId, type WalletId } from "@/utils/injectedWalletId";
-import {
-  createStore,
-  type EIP1193Provider,
-  type EIP6963ProviderDetail,
-} from "mipd";
+import { getWalletId, type WalletId } from "@/utils/WalletId";
+import { createStore, type EIP6963ProviderDetail } from "mipd";
 import {
   BehaviorSubject,
   combineLatest,
@@ -13,6 +9,7 @@ import {
   Observable,
   shareReplay,
 } from "rxjs";
+import type { EIP1193Provider } from "viem";
 
 const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
   (subscriber) => {
@@ -77,16 +74,18 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
         map(([providerDetails, enabledWalletIds]) => {
           return providerDetails.map((pd): EthereumWallet => {
             const walletId = getWalletId("ethereum", pd.info.rdns);
+            const provider = pd.provider as EIP1193Provider;
 
             return {
               platform: "ethereum",
               id: walletId,
               name: pd.info.name,
               icon: pd.info.icon,
-              provider: pd.provider,
+              provider,
               isEnabled: enabledWalletIds.has(walletId),
-              connect: () => connectWallet(walletId, pd.provider),
-              disconnect: () => disconnectWallet(walletId, pd.provider),
+              providerId: pd.info.rdns,
+              connect: () => connectWallet(walletId, provider),
+              disconnect: () => disconnectWallet(walletId, provider),
             };
           });
         })

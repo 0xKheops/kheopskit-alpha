@@ -9,7 +9,7 @@ const DEFAULT_CONFIG: KheopskitConfig = {
 
 export const configStore = createStore("config", DEFAULT_CONFIG);
 
-export const useConfig = () => {
+export const useLocalStorageConfig = () => {
   const config = useSyncExternalStore(
     configStore.subscribe,
     configStore.getSnapshot

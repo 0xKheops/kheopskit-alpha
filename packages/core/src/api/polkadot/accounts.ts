@@ -1,5 +1,5 @@
 import type { PolkadotWallet } from "@/api/types";
-import { getInjectedAccountId, type AccountId } from "@/utils";
+import { getAccountId, type AccountId } from "@/utils";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import {
   combineLatest,
@@ -14,7 +14,8 @@ import { polkadotWallets$ } from "./wallets";
 export type PolkadotAccount = InjectedPolkadotAccount & {
   id: AccountId;
   platform: "polkadot";
-  wallet: string;
+  walletName: string;
+  walletId: string;
 };
 
 const getWalletAccounts$ = (
@@ -24,10 +25,11 @@ const getWalletAccounts$ = (
 
   return new Observable<PolkadotAccount[]>((subscriber) => {
     const getAccount = (account: InjectedPolkadotAccount): PolkadotAccount => ({
-      id: getInjectedAccountId(wallet.id, account.address),
+      id: getAccountId(wallet.id, account.address),
       ...account,
       platform: "polkadot",
-      wallet: wallet.name,
+      walletName: wallet.name,
+      walletId: wallet.id,
     });
 
     // subscribe to changes

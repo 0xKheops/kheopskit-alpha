@@ -1,5 +1,5 @@
-import type { WalletId } from "@/utils/injectedWalletId";
-import type { EIP1193Provider } from "mipd";
+import type { WalletId } from "@/utils/WalletId";
+import type { EIP1193Provider } from "viem";
 import type {
   InjectedAccount,
   InjectedExtension,
@@ -51,6 +51,7 @@ export type KheopskitConfig = {
 export type PolkadotDisabledInjectedWallet = {
   id: WalletId;
   platform: "polkadot";
+  extensionId: string;
   name: string;
   isEnabled: false;
   connect: () => Promise<void>;
@@ -59,10 +60,11 @@ export type PolkadotDisabledInjectedWallet = {
 export type PolkadotEnabledInjectedWallet = {
   id: WalletId;
   platform: "polkadot";
+  extensionId: string;
+  extension: InjectedExtension;
   name: string;
   isEnabled: true;
   disconnect: () => void;
-  extension: InjectedExtension;
 };
 
 // TODO export type PolkadotWalletConnectWallet = {}
@@ -74,12 +76,13 @@ export type PolkadotWallet =
 export type EthereumWallet = {
   platform: "ethereum";
   id: WalletId;
+  providerId: string;
+  provider: EIP1193Provider;
   name: string;
   icon: string;
   isEnabled: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;
-  provider: EIP1193Provider;
 };
 
 export type Wallet = PolkadotWallet | EthereumWallet;

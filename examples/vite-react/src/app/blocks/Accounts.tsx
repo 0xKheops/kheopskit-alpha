@@ -14,39 +14,42 @@ import { type FC, useCallback, useMemo } from "react";
 
 import { Binary } from "polkadot-api";
 import { toast } from "sonner";
+import { AppBlock } from "./AppBlock";
 
 export const Accounts = () => {
   const { accounts } = useWallets();
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Platform</TableHead>
-          <TableHead>Wallet</TableHead>
-          <TableHead className="w-1/3">Name</TableHead>
-          <TableHead className="w-1/3">Address</TableHead>
-          <TableHead> </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {accounts.map((account) => (
-          <AccountRow key={account.id} account={account} />
-        ))}
-      </TableBody>
-    </Table>
+    <AppBlock title="Accounts" description="Lists all connected accounts">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Platform</TableHead>
+            <TableHead>Wallet</TableHead>
+            <TableHead className="w-1/3">Name</TableHead>
+            <TableHead className="w-1/3">Address</TableHead>
+            <TableHead> </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {accounts.map((account) => (
+            <AccountRow key={account.id} account={account} />
+          ))}
+        </TableBody>
+      </Table>
+    </AppBlock>
   );
 };
 
 const AccountRow: FC<{ account: WalletAccount }> = ({ account }) => {
-  const { platform, wallet, address } = account;
+  const { platform, walletName, address } = account;
 
   const shortAddress = useMemo(() => shortenAddress(address), [address]);
 
   return (
     <TableRow key={account.id}>
       <TableCell>{platform}</TableCell>
-      <TableCell>{wallet}</TableCell>
+      <TableCell>{walletName}</TableCell>
       <TableCell>
         {account.platform === "polkadot" ? account.name : null}
       </TableCell>

@@ -1,10 +1,6 @@
 import { store } from "@/api/store";
 import type { PolkadotWallet } from "@/api/types";
-import {
-  getWalletId,
-  parseWalletId,
-  type WalletId,
-} from "@/utils/injectedWalletId";
+import { getWalletId, parseWalletId, type WalletId } from "@/utils/WalletId";
 import { isEqual } from "lodash";
 import {
   connectInjectedExtension,
@@ -35,8 +31,8 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
     const connect = async (walletId: WalletId) => {
       if (enabledExtensions$.value.has(walletId))
         throw new Error(`Extension ${walletId} already connected`);
-      const { name } = parseWalletId(walletId);
-      const extension = await connectInjectedExtension(name);
+      const { identifier } = parseWalletId(walletId);
+      const extension = await connectInjectedExtension(identifier);
 
       const newMap = new Map(enabledExtensions$.value);
       newMap.set(walletId, extension);
@@ -67,14 +63,15 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
       .pipe(
         map(([walletIds, enabledExtensions]) => {
           return walletIds.map((id): PolkadotWallet => {
-            const { name } = parseWalletId(id);
+            const { identifier } = parseWalletId(id);
             const extension = enabledExtensions.get(id);
 
             return extension
               ? {
                   id,
                   platform: "polkadot",
-                  name,
+                  name: identifier,
+                  extensionId: identifier,
                   isEnabled: true,
                   extension,
                   disconnect: () => disconnect(id),
@@ -82,7 +79,8 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
               : {
                   id,
                   platform: "polkadot",
-                  name,
+                  name: identifier,
+                  extensionId: identifier,
                   isEnabled: false,
                   connect: () => connect(id),
                 };

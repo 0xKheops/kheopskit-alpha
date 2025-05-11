@@ -5,17 +5,17 @@ export type WalletId = string;
 
 export const getWalletId = (
   platform: WalletPlatform,
-  name: string
+  identifier: string
 ): WalletId => {
   if (!isWalletPlatform(platform)) throw new Error("Invalid platform");
-  if (!name) throw new Error("Invalid name");
-  return `${platform}:${name}`;
+  if (!identifier) throw new Error("Invalid name");
+  return `${platform}:${identifier}`;
 };
 
 export const parseWalletId = (walletId: string) => {
   if (!walletId) throw new Error("Invalid walletId");
-  const [platform, name] = walletId.split(":");
+  const [platform, identifier] = walletId.split(":");
   if (!isWalletPlatform(platform)) throw new Error("Invalid platform");
-  if (!name) throw new Error("Invalid address");
-  return { platform, name };
+  if (!identifier) throw new Error("Invalid address");
+  return { platform, identifier };
 };

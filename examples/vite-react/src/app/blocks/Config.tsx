@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useConfig } from "@/lib/configStore";
+import { useLocalStorageConfig } from "@/lib/configStore";
 import { AppBlock } from "./AppBlock";
 
 export const Config = () => (
@@ -12,7 +12,7 @@ export const Config = () => (
 );
 
 const AutoReconnect = () => {
-  const { config, setAutoReconnect } = useConfig();
+  const { config, setAutoReconnect } = useLocalStorageConfig();
 
   return (
     <div className="items-top flex space-x-2">
@@ -42,7 +42,7 @@ const AutoReconnect = () => {
 const PLATFORMS = ["polkadot", "ethereum"] as const;
 
 const Platforms = () => {
-  const { config, setPlatformEnabled } = useConfig();
+  const { config, setPlatformEnabled } = useLocalStorageConfig();
 
   return (
     <div className="items-top flex space-x-2">

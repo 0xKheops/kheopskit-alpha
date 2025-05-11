@@ -1,7 +1,7 @@
 import { createStore } from "@/utils/createStore";
 import type { KheopskitStoreData } from "./types";
 import { uniq } from "lodash";
-import { parseWalletId, type WalletId } from "@/utils/injectedWalletId";
+import { parseWalletId, type WalletId } from "@/utils/WalletId";
 
 const LOCAL_STORAGE_KEY = "kheopskit";
 

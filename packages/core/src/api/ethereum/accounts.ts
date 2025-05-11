@@ -1,5 +1,5 @@
 import type { EthereumWallet } from "@/api/types";
-import { getInjectedAccountId, type AccountId } from "@/utils";
+import { getAccountId, type AccountId } from "@/utils";
 import {
   combineLatest,
   map,
@@ -16,7 +16,8 @@ export type EthereumAccount = {
   platform: "ethereum";
   provider: EIP1193Provider;
   address: `0x${string}`;
-  wallet: string;
+  walletName: string;
+  walletId: string;
   isWalletDefault: boolean;
 };
 
@@ -27,11 +28,12 @@ const getWalletAccounts$ = (
 
   return new Observable<EthereumAccount[]>((subscriber) => {
     const getAccount = (address: string, i: number): EthereumAccount => ({
-      id: getInjectedAccountId(wallet.id, address),
+      id: getAccountId(wallet.id, address),
       platform: "ethereum",
-      provider: wallet.provider,
+      provider: wallet.provider as EIP1193Provider,
       address: getAddress(address),
-      wallet: wallet.name,
+      walletName: wallet.name,
+      walletId: wallet.id,
       isWalletDefault: i === 0,
     });
 

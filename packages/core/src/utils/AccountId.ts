@@ -4,7 +4,7 @@ import { isValidAddress } from "./isValidAddress";
 
 export type AccountId = string;
 
-export const getInjectedAccountId = (
+export const getAccountId = (
   walletId: string,
   address: SS58String
 ): AccountId => {
@@ -13,7 +13,7 @@ export const getInjectedAccountId = (
   return `${walletId}::${address}`;
 };
 
-export const parseInjectedAccountId = (accountId: string) => {
+export const parseAccountId = (accountId: string) => {
   if (!accountId) throw new Error("Invalid walletAccountId");
   const [walletId, address] = accountId.split("::");
   if (!walletId) throw new Error("Missing walletId");
