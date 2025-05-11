@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Code, Github } from "lucide-react";
+import { Code } from "lucide-react";
 import type { FC, PropsWithChildren, ReactNode } from "react";
 
 export const AppBlock: FC<
