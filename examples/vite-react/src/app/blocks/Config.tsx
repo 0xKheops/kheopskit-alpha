@@ -53,24 +53,26 @@ const Platforms = () => {
       <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
         Platforms:
       </div>
-      {Object.entries(PLATFORMS).map(([platform, label]) => (
-        <div key={platform} className="flex items-center space-x-2">
-          <Checkbox
-            id={platform}
-            checked={config.platforms.includes(platform)}
-            onCheckedChange={(checked) => {
-              if (typeof checked !== "boolean") return;
-              setPlatformEnabled(platform, checked);
-            }}
-          />
-          <label
-            htmlFor={platform}
-            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {label}
-          </label>
-        </div>
-      ))}
+      {Object.entries(PLATFORMS)
+        .map((p) => p as [WalletPlatform, string])
+        .map(([platform, label]) => (
+          <div key={platform} className="flex items-center space-x-2">
+            <Checkbox
+              id={platform}
+              checked={config.platforms.includes(platform)}
+              onCheckedChange={(checked) => {
+                if (typeof checked !== "boolean") return;
+                setPlatformEnabled(platform, checked);
+              }}
+            />
+            <label
+              htmlFor={platform}
+              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {label}
+            </label>
+          </div>
+        ))}
     </div>
   );
 };
