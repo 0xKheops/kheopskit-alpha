@@ -1,6 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocalStorageConfig } from "@/lib/configStore";
 import { AppBlock } from "./AppBlock";
+import type { WalletPlatform } from "@kheopskit/core";
 
 export const Config = () => (
   <AppBlock title="Config" description="Set initialization parameters">
@@ -39,7 +40,10 @@ const AutoReconnect = () => {
   );
 };
 
-const PLATFORMS = ["polkadot", "ethereum"] as const;
+const PLATFORMS: Record<WalletPlatform, string> = {
+  polkadot: "Polkadot (with PAPI)",
+  ethereum: "Ethereum (with Viem or Wagmi)",
+};
 
 const Platforms = () => {
   const { config, setPlatformEnabled } = useLocalStorageConfig();
@@ -49,7 +53,7 @@ const Platforms = () => {
       <div className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
         Platforms:
       </div>
-      {PLATFORMS.map((platform) => (
+      {Object.entries(PLATFORMS).map(([platform, label]) => (
         <div key={platform} className="flex items-center space-x-2">
           <Checkbox
             id={platform}
@@ -63,7 +67,7 @@ const Platforms = () => {
             htmlFor={platform}
             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {platform}
+            {label}
           </label>
         </div>
       ))}
