@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Release packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Create release
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm
+
+      - name: Publish to npm
+        if: steps.changesets.outputs.published == 'true'
+        run: pnpm publish -r
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
