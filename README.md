@@ -51,9 +51,9 @@ const App = () => {
             [{wallet.platform}] {wallet.name}
           </div>
           {wallet.isConnected ? (
-            <button onClick={wallet.connect}>Connect</button>
-          ) : (
             <button onClick={wallet.disconnect}>Disconnect</button>
+          ) : (
+            <button onClick={wallet.connect}>Connect</button>
           )}
         </div>
       ))}
