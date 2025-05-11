@@ -15,12 +15,6 @@ importers:
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
-      '@kheopskit/core':
-        specifier: link:packages/core
-        version: link:packages/core
-      '@kheopskit/react':
-        specifier: link:packages/react
-        version: link:packages/react
     devDependencies:
       '@changesets/cli':
         specifier: ^2.29.3

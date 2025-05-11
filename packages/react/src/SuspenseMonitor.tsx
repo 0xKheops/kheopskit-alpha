@@ -1,4 +1,3 @@
-import { logger } from "@kheopskit/core";
 import { type FC, useEffect, useRef } from "react";
 
 const SHOULD_LOG = true; // TODO only DEV
@@ -12,7 +11,7 @@ export const SuspenseMonitorInner: FC<{ label: string }> = ({ label }) => {
     }, 500);
 
     return () => {
-      logger.debug(
+      console.debug(
         "[Suspense] %s : %s ms",
         label,
         (performance.now() - refStart.current).toFixed(2)

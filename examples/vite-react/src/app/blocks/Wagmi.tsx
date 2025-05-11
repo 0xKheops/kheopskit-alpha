@@ -6,10 +6,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAccount, useConnect, useConnections, useSignMessage } from "wagmi";
 import { AppBlock } from "./AppBlock";
 import { useWallets } from "@kheopskit/react";
+import { toast } from "sonner";
 
 export const Wagmi = () => {
   return (
@@ -99,17 +100,17 @@ const ActiveAccount = () => {
     );
     if (!connection) return;
 
-    const signature = await signMessageAsync({
-      message: "Hello Wagmi!",
-      account: account.address,
-      connector: connection.connector,
-    });
-    console.log("Signature:", signature);
+    try {
+      const signature = await signMessageAsync({
+        message: "Hello Wagmi!",
+        account: account.address,
+        connector: connection.connector,
+      });
+      toast.success(`Signature: ${signature}`);
+    } catch (err) {
+      toast.error(`Error: ${(err as Error).message}`);
+    }
   };
-
-  useEffect(() => {
-    console.log("Wagmi connections", connections);
-  }, [connections]);
 
   return (
     <div>

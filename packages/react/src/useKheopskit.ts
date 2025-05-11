@@ -20,8 +20,6 @@ export const useWallets = () => {
 
   const kheopskit = useKheopskit(ctx.config);
 
-  console.log("[kheopskit] kheopskit", kheopskit);
-
   return {
     wallets: kheopskit.wallets,
     accounts: kheopskit.accounts,

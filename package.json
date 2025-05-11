@@ -20,8 +20,6 @@
     "typescript": "~5.7.2"
   },
   "dependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@kheopskit/core": "link:packages/core",
-    "@kheopskit/react": "link:packages/react"
+    "@biomejs/biome": "^1.9.4"
   }
 }
