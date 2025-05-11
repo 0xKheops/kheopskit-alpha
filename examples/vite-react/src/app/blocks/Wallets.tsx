@@ -36,7 +36,7 @@ export const Wallets = () => {
                 {accounts.filter((a) => a.walletId === wallet.id).length}
               </TableCell>
               <TableCell className="text-right">
-                {wallet.isEnabled ? (
+                {wallet.isConnected ? (
                   <Button className="w-28" onClick={wallet.disconnect}>
                     Disconnect
                   </Button>

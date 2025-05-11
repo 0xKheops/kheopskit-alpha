@@ -82,7 +82,7 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
               name: pd.info.name,
               icon: pd.info.icon,
               provider,
-              isEnabled: enabledWalletIds.has(walletId),
+              isConnected: enabledWalletIds.has(walletId),
               providerId: pd.info.rdns,
               connect: () => connectWallet(walletId, provider),
               disconnect: () => disconnectWallet(walletId, provider),

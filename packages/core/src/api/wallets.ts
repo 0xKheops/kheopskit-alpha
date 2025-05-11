@@ -48,7 +48,7 @@ export const getWallets$ = (config: ResolvedConfig) => {
         distinct((w) => w.id)
       )
       .subscribe(async (wallet) => {
-        if (wallet.isEnabled) {
+        if (wallet.isConnected) {
           console.warn("Wallet %s already connected", wallet.id);
           return;
         }

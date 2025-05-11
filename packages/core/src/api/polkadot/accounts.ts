@@ -1,5 +1,5 @@
-import type { PolkadotWallet } from "@/api/types";
-import { getAccountId, type AccountId } from "@/utils";
+import type { PolkadotAccount, PolkadotWallet } from "@/api/types";
+import { getWalletAccountId } from "@/utils";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import {
   combineLatest,
@@ -11,21 +11,14 @@ import {
 } from "rxjs";
 import { polkadotWallets$ } from "./wallets";
 
-export type PolkadotAccount = InjectedPolkadotAccount & {
-  id: AccountId;
-  platform: "polkadot";
-  walletName: string;
-  walletId: string;
-};
-
 const getWalletAccounts$ = (
   wallet: PolkadotWallet
 ): Observable<PolkadotAccount[]> => {
-  if (!wallet.isEnabled) return of([]);
+  if (!wallet.isConnected) return of([]);
 
   return new Observable<PolkadotAccount[]>((subscriber) => {
     const getAccount = (account: InjectedPolkadotAccount): PolkadotAccount => ({
-      id: getAccountId(wallet.id, account.address),
+      id: getWalletAccountId(wallet.id, account.address),
       ...account,
       platform: "polkadot",
       walletName: wallet.name,
@@ -50,7 +43,7 @@ export const polkadotAccounts$ = new Observable<PolkadotAccount[]>(
   (subscriber) => {
     const sub = polkadotWallets$
       .pipe(
-        map((wallets) => wallets.filter((w) => w.isEnabled)),
+        map((wallets) => wallets.filter((w) => w.isConnected)),
         switchMap((wallets) =>
           wallets.length
             ? combineLatest(wallets.map(getWalletAccounts$))

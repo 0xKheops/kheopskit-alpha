@@ -1,45 +1,12 @@
 import type { WalletId } from "@/utils/WalletId";
 import type { EIP1193Provider } from "viem";
 import type {
-  InjectedAccount,
   InjectedExtension,
-  PolkadotSigner,
+  InjectedPolkadotAccount,
 } from "polkadot-api/pjs-signer";
-import type { PolkadotAccount } from "./polkadot/accounts";
-import type { EthereumAccount } from "./ethereum/accounts";
-
-type AccountStorageBase = {
-  wallet: string;
-  address: string;
-};
-
-export type EthereumAccountStorage = AccountStorageBase & {
-  platform: "ethereum";
-};
-
-export type PolkadotAccountStorage = AccountStorageBase & {
-  platform: "polkadot";
-  name: InjectedAccount["name"];
-  type: InjectedAccount["type"]; // required, right?
-  genesisHash: InjectedAccount["genesisHash"];
-};
-
-export type AccountStorage = PolkadotAccountStorage | EthereumAccountStorage;
-
-export type Account<T extends AccountStorage> = T & {
-  id: string;
-  signer: T extends PolkadotAccountStorage ? PolkadotSigner : null;
-};
-
-export type PlatformData<T extends AccountStorageBase> = {
-  enabledExtensionIds: string[];
-  accounts: T[];
-  defaultAccountId: string | null;
-};
+import type { WalletAccountId } from "@/utils";
 
 export type KheopskitStoreData = {
-  // polkadot?: PlatformData<PolkadotAccountStorage>;
-  // ethereum?: PlatformData<EthereumAccountStorage>;
   autoReconnect?: WalletId[];
 };
 
@@ -53,7 +20,7 @@ export type PolkadotDisabledInjectedWallet = {
   platform: "polkadot";
   extensionId: string;
   name: string;
-  isEnabled: false;
+  isConnected: false;
   connect: () => Promise<void>;
 };
 
@@ -63,7 +30,7 @@ export type PolkadotEnabledInjectedWallet = {
   extensionId: string;
   extension: InjectedExtension;
   name: string;
-  isEnabled: true;
+  isConnected: true;
   disconnect: () => void;
 };
 
@@ -80,7 +47,7 @@ export type EthereumWallet = {
   provider: EIP1193Provider;
   name: string;
   icon: string;
-  isEnabled: boolean;
+  isConnected: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;
 };
@@ -88,5 +55,22 @@ export type EthereumWallet = {
 export type Wallet = PolkadotWallet | EthereumWallet;
 
 export type WalletPlatform = Wallet["platform"];
+
+export type PolkadotAccount = InjectedPolkadotAccount & {
+  id: WalletAccountId;
+  platform: "polkadot";
+  walletName: string;
+  walletId: string;
+};
+
+export type EthereumAccount = {
+  id: WalletAccountId;
+  platform: "ethereum";
+  provider: EIP1193Provider;
+  address: `0x${string}`;
+  walletName: string;
+  walletId: string;
+  isWalletDefault: boolean;
+};
 
 export type WalletAccount = PolkadotAccount | EthereumAccount;

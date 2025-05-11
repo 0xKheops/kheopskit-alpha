@@ -18,10 +18,5 @@ export const useWallets = () => {
   if (!ctx)
     throw new Error("useWallets must be used within a KheopskitProvider");
 
-  const kheopskit = useKheopskit(ctx.config);
-
-  return {
-    wallets: kheopskit.wallets,
-    accounts: kheopskit.accounts,
-  };
+  return useKheopskit(ctx.config);
 };

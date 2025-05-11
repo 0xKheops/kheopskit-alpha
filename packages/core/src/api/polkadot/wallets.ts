@@ -72,7 +72,7 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
                   platform: "polkadot",
                   name: identifier,
                   extensionId: identifier,
-                  isEnabled: true,
+                  isConnected: true,
                   extension,
                   disconnect: () => disconnect(id),
                 }
@@ -81,7 +81,7 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
                   platform: "polkadot",
                   name: identifier,
                   extensionId: identifier,
-                  isEnabled: false,
+                  isConnected: false,
                   connect: () => connect(id),
                 };
           });
