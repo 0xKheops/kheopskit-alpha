@@ -1,5 +1,11 @@
 # @kheopskit/core
 
+## 0.0.1-alpha.1
+
+### Patch Changes
+
+- [`4f378f9`](https://github.com/0xKheops/kheopskit-alpha/commit/4f378f9b61e555b7b66ef3bfaf107ab8e6ac62b1) Thanks [@0xKheops](https://github.com/0xKheops)! - refactor property names
+
 ## 0.0.1-alpha.0
 
 ### Patch Changes
