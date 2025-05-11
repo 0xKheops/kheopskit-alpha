@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "vite-react": "0.0.0",
+    "@kheopskit/core": "0.0.0",
+    "@kheopskit/react": "0.0.0"
+  },
+  "changesets": []
+}
