@@ -1,10 +1,14 @@
 import { map, ReplaySubject, shareReplay, take } from "rxjs";
 import type { KheopskitConfig } from "./types";
 
-export const DEFAULT_CONFIG: KheopskitConfig = {
+export type ResolvedConfig = Required<KheopskitConfig>;
+
+export const DEFAULT_CONFIG: ResolvedConfig = {
   autoReconnect: true,
   platforms: ["polkadot"],
 };
+
+// TODO yeet below
 
 const config$ = new ReplaySubject<KheopskitConfig>(1);
 
@@ -27,3 +31,7 @@ export const platforms$ = config$.pipe(
 config$.subscribe((config) => {
   console.log("[kheopskit] config$", config);
 });
+
+export const resolveConfig = (config: KheopskitConfig): ResolvedConfig => {
+  return Object.assign({}, DEFAULT_CONFIG, config);
+};

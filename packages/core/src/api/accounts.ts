@@ -1,23 +1,12 @@
-import {
-  combineLatest,
-  map,
-  type Observable,
-  shareReplay,
-  switchMap,
-  tap,
-} from "rxjs";
-import { platforms$ } from "./config";
+import { combineLatest, map, Observable, of, shareReplay } from "rxjs";
+import type { ResolvedConfig } from "./config";
 import { ethereumAccounts$ } from "./ethereum/accounts";
 import { polkadotAccounts$ } from "./polkadot/accounts";
 import type { WalletAccount } from "./types";
 
-export const accounts$ = platforms$.pipe(
-  tap((val) => {
-    console.log("[kheopskit] wallets$ platforms", val);
-    return val;
-  }),
-  switchMap((platforms) => {
-    const observables = platforms.map<Observable<WalletAccount[]>>(
+export const getAccounts$ = (config: ResolvedConfig) => {
+  return new Observable<WalletAccount[]>((subscriber) => {
+    const observables = config.platforms.map<Observable<WalletAccount[]>>(
       (platform) => {
         switch (platform) {
           case "polkadot":
@@ -28,12 +17,14 @@ export const accounts$ = platforms$.pipe(
       }
     );
 
-    return combineLatest(observables);
-  }),
-  map((accounts) => accounts.flat()),
-  shareReplay({ refCount: true, bufferSize: 1 })
-);
+    const accounts$ = observables.length
+      ? combineLatest(observables).pipe(map((accounts) => accounts.flat()))
+      : of([]);
 
-accounts$.subscribe(() => {
-  console.count("[kheopskit] accounts$ emit");
-});
+    const sub = accounts$.subscribe(subscriber);
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+};

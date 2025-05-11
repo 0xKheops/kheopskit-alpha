@@ -3,7 +3,6 @@ import { getInjectedAccountId, type AccountId } from "@/utils";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import {
   combineLatest,
-  distinct,
   map,
   Observable,
   of,
@@ -55,12 +54,9 @@ export const polkadotAccounts$ = new Observable<PolkadotAccount[]>(
             ? combineLatest(wallets.map(getWalletAccounts$))
             : of([])
         ),
-        map((accounts) => accounts.flat()),
-        distinct((a) => a.map((a) => a.id).join(","))
+        map((accounts) => accounts.flat())
       )
-      .subscribe((val) => {
-        subscriber.next(val);
-      });
+      .subscribe(subscriber);
 
     return () => {
       sub.unsubscribe();

@@ -1,16 +1,15 @@
-import { kheopskit, type KheopskitConfig } from "@kheopskit/core";
-import { useEffect, type FC, type PropsWithChildren } from "react";
+import { getKheopskit$, type KheopskitConfig } from "@kheopskit/core";
+import { useEffect, useMemo, type FC, type PropsWithChildren } from "react";
 import { Subscribe } from "@react-rxjs/core";
+import { KheopskitContext } from "./context";
 
 export const KheopskitProvider: FC<
   PropsWithChildren & { config: KheopskitConfig }
 > = ({ children, config }) => {
-  useEffect(() => {
-    kheopskit.init(config);
-  }, [config]);
-
   return (
     // TODO set source
-    <Subscribe>{children}</Subscribe>
+    <KheopskitContext.Provider value={{ config }}>
+      <Subscribe>{children}</Subscribe>
+    </KheopskitContext.Provider>
   );
 };
