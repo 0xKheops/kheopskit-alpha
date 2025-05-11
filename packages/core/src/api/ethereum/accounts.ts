@@ -15,7 +15,7 @@ export type EthereumAccount = {
   id: AccountId;
   platform: "ethereum";
   provider: EIP1193Provider;
-  address: string;
+  address: `0x${string}`;
   wallet: string;
   isWalletDefault: boolean;
 };

@@ -3,7 +3,15 @@ import { bind } from "@react-rxjs/core";
 import { useContext } from "react";
 import { KheopskitContext } from "./context";
 
-const [useKheopskit] = bind((config: KheopskitConfig) => getKheopskit$(config));
+const DEFAULT_VALUE = {
+  wallets: [],
+  accounts: [],
+};
+
+const [useKheopskit] = bind(
+  (config: KheopskitConfig) => getKheopskit$(config),
+  DEFAULT_VALUE
+);
 
 export const useWallets = () => {
   const ctx = useContext(KheopskitContext);
@@ -11,6 +19,8 @@ export const useWallets = () => {
     throw new Error("useWallets must be used within a KheopskitProvider");
 
   const kheopskit = useKheopskit(ctx.config);
+
+  console.log("[kheopskit] kheopskit", kheopskit);
 
   return {
     wallets: kheopskit.wallets,

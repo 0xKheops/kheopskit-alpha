@@ -1,7 +1,8 @@
-import { getKheopskit$, type KheopskitConfig } from "@kheopskit/core";
-import { useEffect, useMemo, type FC, type PropsWithChildren } from "react";
+import type { KheopskitConfig } from "@kheopskit/core";
 import { Subscribe } from "@react-rxjs/core";
+import type { FC, PropsWithChildren } from "react";
 import { KheopskitContext } from "./context";
+import { SuspenseMonitor } from "./SuspenseMonitor";
 
 export const KheopskitProvider: FC<
   PropsWithChildren & { config: KheopskitConfig }
@@ -9,7 +10,9 @@ export const KheopskitProvider: FC<
   return (
     // TODO set source
     <KheopskitContext.Provider value={{ config }}>
-      <Subscribe>{children}</Subscribe>
+      <Subscribe fallback={<SuspenseMonitor label="KheopskitProvider" />}>
+        {children}
+      </Subscribe>
     </KheopskitContext.Provider>
   );
 };

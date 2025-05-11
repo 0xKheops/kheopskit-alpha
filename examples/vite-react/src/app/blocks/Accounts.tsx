@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,7 +10,10 @@ import {
 import { shortenAddress } from "@/lib/shortenAddress";
 import type { WalletAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
-import { type FC, useMemo } from "react";
+import { type FC, useCallback, useMemo } from "react";
+
+import { Binary } from "polkadot-api";
+import { toast } from "sonner";
 
 export const Accounts = () => {
   const { accounts } = useWallets();
@@ -20,8 +24,9 @@ export const Accounts = () => {
         <TableRow>
           <TableHead>Platform</TableHead>
           <TableHead>Wallet</TableHead>
-          <TableHead className="text-right w-1/3">Name</TableHead>
-          <TableHead className="text-right w-1/3">Address</TableHead>
+          <TableHead className="w-1/3">Name</TableHead>
+          <TableHead className="w-1/3">Address</TableHead>
+          <TableHead> </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -42,10 +47,56 @@ const AccountRow: FC<{ account: WalletAccount }> = ({ account }) => {
     <TableRow key={account.id}>
       <TableCell>{platform}</TableCell>
       <TableCell>{wallet}</TableCell>
-      <TableCell className="text-right">
+      <TableCell>
         {account.platform === "polkadot" ? account.name : null}
       </TableCell>
-      <TableCell className="text-right font-mono">{shortAddress}</TableCell>
+      <TableCell className="font-mono">{shortAddress}</TableCell>
+      <TableCell className="font-mono">
+        <SignButton account={account} />
+      </TableCell>
     </TableRow>
+  );
+};
+
+const SignButton: FC<{ account: WalletAccount }> = ({ account }) => {
+  const MESSAGE = "Kheopskit rocks!";
+
+  const handleClick = useCallback(async () => {
+    switch (account.platform) {
+      case "polkadot": {
+        const bytes = Binary.fromText(`${MESSAGE}`).asBytes();
+        try {
+          const signature = await account.polkadotSigner.signBytes(bytes);
+          const hexSignature = Binary.fromBytes(signature).asHex();
+          toast.success(`Signature: ${hexSignature}`);
+        } catch (err) {
+          toast.error(`Error: ${(err as Error).message}`);
+        }
+        break;
+      }
+
+      case "ethereum": {
+        try {
+          const message = Binary.fromText(MESSAGE).asHex() as `0x${string}`;
+          const signature = await account.provider.request({
+            method: "personal_sign",
+            params: [message, account.address],
+          });
+          toast.success(`Signature: ${signature}`);
+        } catch (err) {
+          toast.error(`Error: ${(err as Error).message}`);
+        }
+        break;
+      }
+    }
+  }, [account]);
+
+  return (
+    <Button
+      //className="text-sm text-blue-500 hover:underline"
+      onClick={handleClick}
+    >
+      Sign
+    </Button>
   );
 };

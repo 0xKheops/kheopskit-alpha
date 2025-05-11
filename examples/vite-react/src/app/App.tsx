@@ -4,6 +4,7 @@ import { Accounts } from "./blocks/Accounts";
 import { Config } from "./blocks/Config";
 import { useConfig } from "@/lib/configStore";
 import { KheopskitProvider } from "@kheopskit/react";
+import { Toaster } from "@/components/ui/sonner";
 
 function App() {
   const { config } = useConfig();
@@ -21,6 +22,7 @@ function App() {
           <Accounts />
         </AppBlock>
       </div>
+      <Toaster />
     </KheopskitProvider>
   );
 }
