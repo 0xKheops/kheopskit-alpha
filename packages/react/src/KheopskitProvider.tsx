@@ -8,7 +8,6 @@ export const KheopskitProvider: FC<
   PropsWithChildren & { config: KheopskitConfig }
 > = ({ children, config }) => {
   return (
-    // TODO set source
     <KheopskitContext.Provider value={{ config }}>
       <Subscribe fallback={<SuspenseMonitor label="KheopskitProvider" />}>
         {children}
