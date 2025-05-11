@@ -1,13 +1,13 @@
-# KheopsKit Monorepo
+# Kheopskit Monorepo
 
-KheopsKit is a monorepo designed to simplify the development of Polkadot DApps. It provides tools to:
+Kheopskit is a monorepo designed to simplify the development of Polkadot DApps. It provides tools to:
 
 - List all installed wallets and connect/disconnect them.
 - List all accounts from those wallets.
 - Support both Polkadot and Ethereum wallets.
 - Handle identical accounts injected by multiple wallets.
 
-Try it on the [interactive playground](https://kheopskit-alpha.pages.dev/)
+Try it on the [interactive playground](https://Kheopskit-alpha.pages.dev/)
 
 ## Features
 
@@ -22,7 +22,7 @@ Try it on the [interactive playground](https://kheopskit-alpha.pages.dev/)
 Install the required packages using `pnpm`:
 
 ```bash
-pnpm install @kheopskit/core @kheopskit/react
+pnpm install @Kheopskit/core @Kheopskit/react
 ```
 
 ---
@@ -37,7 +37,7 @@ pnpm install @kheopskit/core @kheopskit/react
 
 ```tsx
 import React from "react";
-import { KheopskitProvider, useWallets } from "@kheopskit/react";
+import { KheopskitProvider, useWallets } from "@Kheopskit/react";
 
 const App = () => {
   const { wallets, accounts, connect, disconnect } = useWallets();
@@ -90,15 +90,15 @@ export default Root;
 2. Subscribe to the observable to access wallets and accounts.
 
 ```javascript
-import { getKheopskit$ } from "@kheopskit/core";
+import { getKheopskit$ } from "@Kheopskit/core";
 
 const config = {
   platforms: ["polkadot", "ethereum"],
   autoReconnect: true,
 };
-const kheopskit$ = getKheopskit$(config);
+const Kheopskit$ = getKheopskit$(config);
 
-kheopskit$.subscribe(({ wallets, accounts }) => {
+Kheopskit$.subscribe(({ wallets, accounts }) => {
   console.log("Wallets:", wallets);
   console.log("Accounts:", accounts);
 });
