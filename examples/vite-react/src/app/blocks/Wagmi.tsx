@@ -28,6 +28,7 @@ export const Wagmi = () => {
           <br />
         </>
       }
+      codeUrl="https://github.com/0xKheops/kheopskit-alpha/blob/main/examples/vite-react/src/app/blocks/Wagmi.tsx"
     >
       <div className="flex flex-col gap-8">
         <Connectors />

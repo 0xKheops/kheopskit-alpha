@@ -20,7 +20,11 @@ export const Accounts = () => {
   const { accounts } = useWallets();
 
   return (
-    <AppBlock title="Accounts" description="Lists all connected accounts">
+    <AppBlock
+      title="Accounts"
+      description="Lists all connected accounts"
+      codeUrl="https://github.com/0xKheops/kheopskit-alpha/blob/main/examples/vite-react/src/app/blocks/Accounts.tsx"
+    >
       <Table>
         <TableHeader>
           <TableRow>

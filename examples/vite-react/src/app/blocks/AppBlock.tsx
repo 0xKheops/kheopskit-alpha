@@ -1,15 +1,22 @@
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Github } from "lucide-react";
 import type { FC, PropsWithChildren, ReactNode } from "react";
 
 export const AppBlock: FC<
-  PropsWithChildren<{ title?: ReactNode; description?: ReactNode }>
-> = ({ title, description, children }) => (
+  PropsWithChildren<{
+    title?: ReactNode;
+    description?: ReactNode;
+    codeUrl?: string;
+  }>
+> = ({ title, description, codeUrl, children }) => (
   <Card className="w-full">
     {!!(title || description) && (
       <CardHeader>
@@ -18,5 +25,14 @@ export const AppBlock: FC<
       </CardHeader>
     )}
     <CardContent>{children}</CardContent>
+    {!!codeUrl && (
+      <CardFooter className="justify-end">
+        <Button asChild variant="secondary">
+          <a href={codeUrl} target="_blank" rel="noreferrer">
+            <Github /> Code on Github
+          </a>
+        </Button>
+      </CardFooter>
+    )}
   </Card>
 );
