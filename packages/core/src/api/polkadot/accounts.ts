@@ -1,5 +1,5 @@
 import type { PolkadotWallet } from "@/api/types";
-import { getInjectedAccountId, type InjectedAccountId } from "@/utils";
+import { getInjectedAccountId, type AccountId } from "@/utils";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import {
   combineLatest,
@@ -13,7 +13,7 @@ import {
 import { polkadotWallets$ } from "./wallets";
 
 export type PolkadotAccount = InjectedPolkadotAccount & {
-  id: InjectedAccountId;
+  id: AccountId;
   platform: "polkadot";
   wallet: string;
 };
@@ -31,11 +31,8 @@ const getWalletAccounts$ = (
       wallet: wallet.name,
     });
 
-    // console.log("[kheopskit] getWalletAccounts$ subscribe", wallet.name);
-
     // subscribe to changes
     const unsubscribe = wallet.extension.subscribe((accounts) => {
-      //      console.log("accounts for ", wallet.name, { accounts });
       subscriber.next(accounts.map(getAccount));
     });
 

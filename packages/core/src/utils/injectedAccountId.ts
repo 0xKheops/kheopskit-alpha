@@ -2,12 +2,12 @@ import type { SS58String } from "polkadot-api";
 
 import { isValidAddress } from "./isValidAddress";
 
-export type InjectedAccountId = string;
+export type AccountId = string;
 
 export const getInjectedAccountId = (
   walletId: string,
   address: SS58String
-): InjectedAccountId => {
+): AccountId => {
   if (!walletId) throw new Error("Missing walletId");
   if (!isValidAddress(address)) throw new Error("Invalid address");
   return `${walletId}::${address}`;

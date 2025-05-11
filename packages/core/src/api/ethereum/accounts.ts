@@ -1,5 +1,5 @@
 import type { EthereumWallet } from "@/api/types";
-import { getInjectedAccountId, type InjectedAccountId } from "@/utils";
+import { getInjectedAccountId, type AccountId } from "@/utils";
 import {
   combineLatest,
   map,
@@ -12,7 +12,7 @@ import { getAddress, type EIP1193Provider } from "viem";
 import { ethereumWallets$ } from "./wallets";
 
 export type EthereumAccount = {
-  id: InjectedAccountId;
+  id: AccountId;
   platform: "ethereum";
   provider: EIP1193Provider;
   address: string;

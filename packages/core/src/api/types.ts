@@ -5,6 +5,8 @@ import type {
   InjectedExtension,
   PolkadotSigner,
 } from "polkadot-api/pjs-signer";
+import type { PolkadotAccount } from "./polkadot/accounts";
+import type { EthereumAccount } from "./ethereum/accounts";
 
 type AccountStorageBase = {
   wallet: string;
@@ -83,3 +85,5 @@ export type EthereumWallet = {
 export type Wallet = PolkadotWallet | EthereumWallet;
 
 export type WalletPlatform = Wallet["platform"];
+
+export type WalletAccount = PolkadotAccount | EthereumAccount;
