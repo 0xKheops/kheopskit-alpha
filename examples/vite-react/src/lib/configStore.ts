@@ -1,10 +1,10 @@
-import { DEFAULT_CONFIG, type KheopskitConfig } from "@kheopskit/core";
+import type { KheopskitConfig } from "@kheopskit/core";
 import { useCallback, useSyncExternalStore } from "react";
 import { createStore } from "./createStore";
 
 export const configStore = createStore<Partial<KheopskitConfig>>(
   "demo.config",
-  DEFAULT_CONFIG,
+  { autoReconnect: true, platforms: ["polkadot"] },
 );
 
 export const useLocalStorageConfig = () => {

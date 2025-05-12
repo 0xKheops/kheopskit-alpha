@@ -1,29 +1,37 @@
 import {
-  DEFAULT_CONFIG,
   type KheopskitConfig,
+  type KheopskitState,
   getKheopskit$,
 } from "@kheopskit/core";
-import { Subscribe } from "@react-rxjs/core";
-import { type FC, type PropsWithChildren, useMemo } from "react";
-import { SuspenseMonitor } from "./SuspenseMonitor";
+import {
+  type FC,
+  type PropsWithChildren,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 import { KheopskitContext } from "./context";
+import { createStore } from "./createStore";
+
+const DEFAULT_VALUE: KheopskitState = {
+  wallets: [],
+  accounts: [],
+};
 
 export const KheopskitProvider: FC<
   PropsWithChildren & { config?: Partial<KheopskitConfig> }
-> = ({ children, config: userConfig }) => {
-  const [value, source$] = useMemo(() => {
-    const config = Object.assign({}, DEFAULT_CONFIG, userConfig);
-    return [{ config }, getKheopskit$(config)];
-  }, [userConfig]);
+> = ({ children, config }) => {
+  const store = useMemo(
+    () => createStore(getKheopskit$(config), DEFAULT_VALUE),
+    [config],
+  );
+
+  const state = useSyncExternalStore(store.subscribe, store.getSnapshot);
+
+  const value = useMemo(() => ({ state }), [state]);
 
   return (
     <KheopskitContext.Provider value={value}>
-      <Subscribe
-        source$={source$}
-        fallback={<SuspenseMonitor label="KheopskitProvider" />}
-      >
-        {children}
-      </Subscribe>
+      {children}
     </KheopskitContext.Provider>
   );
 };

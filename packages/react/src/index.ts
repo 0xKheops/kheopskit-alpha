@@ -1,3 +1,2 @@
-export * from "./SuspenseMonitor";
-export * from "./useKheopskit";
+export * from "./useWallets";
 export * from "./KheopskitProvider";

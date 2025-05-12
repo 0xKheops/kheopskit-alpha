@@ -31,10 +31,10 @@
     "polkadot-api": ">=1.10.0"
   },
   "dependencies": {
-    "@kheopskit/core": "workspace:*",
-    "@react-rxjs/core": "^0.10.8"
+    "@kheopskit/core": "workspace:*"
   },
   "devDependencies": {
+    "rxjs": "^7.8.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "@types/react": "^19.0.10",

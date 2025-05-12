@@ -30,7 +30,7 @@ importers:
         version: 2.13.0
       tsup:
         specifier: ^8.4.0
-        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.7.3)
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.7.3)(yaml@2.7.1)
       typescript:
         specifier: ~5.7.2
         version: 5.7.3
@@ -52,12 +52,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.1.2)(react@19.1.0)
-      '@react-rxjs/core':
-        specifier: ^0.10.8
-        version: 0.10.8(react@19.1.0)(rxjs@7.8.2)
       '@tailwindcss/vite':
         specifier: ^4.1.6
-        version: 4.1.6(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2))
+        version: 4.1.6(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))
       '@tanstack/react-query':
         specifier: ^5.75.7
         version: 5.75.7(react@19.1.0)
@@ -78,7 +75,7 @@ importers:
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       polkadot-api:
         specifier: ^1.10.2
-        version: 1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)
+        version: 1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.7.1)
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -115,7 +112,7 @@ importers:
         version: 19.1.3(@types/react@19.1.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.4.1(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2))
+        version: 4.4.1(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))
       eslint:
         specifier: ^9.22.0
         version: 9.26.0(jiti@2.4.2)
@@ -139,7 +136,7 @@ importers:
         version: 8.31.1(eslint@9.26.0(jiti@2.4.2))(typescript@5.7.3)
       vite:
         specifier: ^6.3.1
-        version: 6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)
+        version: 6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1)
 
   packages/core:
     dependencies:
@@ -158,7 +155,7 @@ importers:
         version: 4.17.16
       polkadot-api:
         specifier: ^1.10.1
-        version: 1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)
+        version: 1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.7.1)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -168,12 +165,6 @@ importers:
       '@kheopskit/core':
         specifier: link:../core
         version: link:../core
-      '@react-rxjs/core':
-        specifier: ^0.10.8
-        version: 0.10.8(react@19.1.0)(rxjs@7.8.2)
-      rxjs:
-        specifier: '>=7.8.0'
-        version: 7.8.2
     devDependencies:
       '@types/react':
         specifier: ^19.0.10
@@ -183,13 +174,16 @@ importers:
         version: 19.1.3(@types/react@19.1.2)
       polkadot-api:
         specifier: ^1.10.0
-        version: 1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)
+        version: 1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.7.1)
       react:
         specifier: ^19.0.0
         version: 19.1.0
       react-dom:
         specifier: ^19.0.0
         version: 19.1.0(react@19.1.0)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
 
 packages:
 
@@ -1176,12 +1170,6 @@ packages:
 
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
-
-  '@react-rxjs/core@0.10.8':
-    resolution: {integrity: sha512-vCA7dDpJ7whvBJCerCqY5wvrPnIo4EvxYihQNuDy0u0OhN4kYafs2H755sMLeUXBwSihiskd9Z3v8SHpmcEdzQ==}
-    peerDependencies:
-      react: '>=16.8.0'
-      rxjs: '>=7'
 
   '@reown/appkit-common@1.7.3':
     resolution: {integrity: sha512-wKTr6N3z8ly17cc51xBEVkZK4zAd8J1m7RubgsdQ1olFY9YJGe61RYoNv9yFjt6tUVeYT+z7iMUwPhX2PziefQ==}
@@ -3761,11 +3749,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  use-sync-external-store@1.5.0:
-    resolution: {integrity: sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   utf-8-validate@5.0.10:
     resolution: {integrity: sha512-Z6czzLq4u8fPOyx7TU6X3dvUZVvoJmxSQ+IcrlmagKhilxlhZgxPK6C5Jqbkw1IDUmFTM+cz9QDnnLTwDz/2gQ==}
     engines: {node: '>=6.14.2'}
@@ -4009,6 +3992,11 @@ packages:
   yallist@5.0.0:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
+
+  yaml@2.7.1:
+    resolution: {integrity: sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==}
+    engines: {node: '>= 14'}
+    hasBin: true
 
   yargs-parser@18.1.3:
     resolution: {integrity: sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==}
@@ -4844,7 +4832,7 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@polkadot-api/cli@0.11.13(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(utf-8-validate@5.0.10)':
+  '@polkadot-api/cli@0.11.13(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(utf-8-validate@5.0.10)(yaml@2.7.1)':
     dependencies:
       '@commander-js/extra-typings': 13.1.0(commander@13.1.0)
       '@polkadot-api/codegen': 0.14.0
@@ -4869,7 +4857,7 @@ snapshots:
       read-pkg: 9.0.1
       rxjs: 7.8.2
       tsc-prog: 2.3.0(typescript@5.8.3)
-      tsup: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.3)
+      tsup: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.3)(yaml@2.7.1)
       typescript: 5.8.3
       write-package: 7.1.0
     transitivePeerDependencies:
@@ -5236,13 +5224,6 @@ snapshots:
       '@types/react-dom': 19.1.3(@types/react@19.1.2)
 
   '@radix-ui/rect@1.1.1': {}
-
-  '@react-rxjs/core@0.10.8(react@19.1.0)(rxjs@7.8.2)':
-    dependencies:
-      '@rx-state/core': 0.1.4(rxjs@7.8.2)
-      react: 19.1.0
-      rxjs: 7.8.2
-      use-sync-external-store: 1.5.0(react@19.1.0)
 
   '@reown/appkit-common@1.7.3(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.22.4)':
     dependencies:
@@ -5645,12 +5626,12 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.1.6
       '@tailwindcss/oxide-win32-x64-msvc': 4.1.6
 
-  '@tailwindcss/vite@4.1.6(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2))':
+  '@tailwindcss/vite@4.1.6(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))':
     dependencies:
       '@tailwindcss/node': 4.1.6
       '@tailwindcss/oxide': 4.1.6
       tailwindcss: 4.1.6
-      vite: 6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)
+      vite: 6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1)
 
   '@tanstack/query-core@5.75.7': {}
 
@@ -5787,14 +5768,14 @@ snapshots:
       '@typescript-eslint/types': 8.31.1
       eslint-visitor-keys: 4.2.0
 
-  '@vitejs/plugin-react@4.4.1(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2))':
+  '@vitejs/plugin-react@4.4.1(vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))':
     dependencies:
       '@babel/core': 7.27.1
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.27.1)
       '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.27.1)
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)
+      vite: 6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -7795,9 +7776,9 @@ snapshots:
 
   pngjs@5.0.0: {}
 
-  polkadot-api@1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10):
+  polkadot-api@1.10.2(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(rxjs@7.8.2)(utf-8-validate@5.0.10)(yaml@2.7.1):
     dependencies:
-      '@polkadot-api/cli': 0.11.13(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(utf-8-validate@5.0.10)
+      '@polkadot-api/cli': 0.11.13(bufferutil@4.0.9)(jiti@2.4.2)(postcss@8.5.3)(utf-8-validate@5.0.10)(yaml@2.7.1)
       '@polkadot-api/ink-contracts': 0.3.0
       '@polkadot-api/json-rpc-provider': 0.0.4
       '@polkadot-api/known-chains': 0.7.4
@@ -7832,12 +7813,13 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.3):
+  postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.3)(yaml@2.7.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.4.2
       postcss: 8.5.3
+      yaml: 2.7.1
 
   postcss@8.5.3:
     dependencies:
@@ -8350,7 +8332,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.7.3):
+  tsup@8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.7.3)(yaml@2.7.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.3)
       cac: 6.7.14
@@ -8360,7 +8342,7 @@ snapshots:
       esbuild: 0.25.3
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@2.4.2)(postcss@8.5.3)
+      postcss-load-config: 6.0.1(jiti@2.4.2)(postcss@8.5.3)(yaml@2.7.1)
       resolve-from: 5.0.0
       rollup: 4.40.1
       source-map: 0.8.0-beta.0
@@ -8377,7 +8359,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.3):
+  tsup@8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.3)(yaml@2.7.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.3)
       cac: 6.7.14
@@ -8387,7 +8369,7 @@ snapshots:
       esbuild: 0.25.3
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@2.4.2)(postcss@8.5.3)
+      postcss-load-config: 6.0.1(jiti@2.4.2)(postcss@8.5.3)(yaml@2.7.1)
       resolve-from: 5.0.0
       rollup: 4.40.1
       source-map: 0.8.0-beta.0
@@ -8496,10 +8478,6 @@ snapshots:
     dependencies:
       react: 19.1.0
 
-  use-sync-external-store@1.5.0(react@19.1.0):
-    dependencies:
-      react: 19.1.0
-
   utf-8-validate@5.0.10:
     dependencies:
       node-gyp-build: 4.8.4
@@ -8602,7 +8580,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2):
+  vite@6.3.4(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1):
     dependencies:
       esbuild: 0.25.3
       fdir: 6.4.4(picomatch@4.0.2)
@@ -8615,6 +8593,7 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.4.2
       lightningcss: 1.29.2
+      yaml: 2.7.1
 
   wagmi@2.15.2(@tanstack/query-core@5.75.7)(@tanstack/react-query@5.75.7(react@19.1.0))(@types/react@19.1.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.3))(zod@3.24.3):
     dependencies:
@@ -8765,6 +8744,9 @@ snapshots:
   yallist@3.1.1: {}
 
   yallist@5.0.0: {}
+
+  yaml@2.7.1:
+    optional: true
 
   yargs-parser@18.1.3:
     dependencies:

@@ -1,6 +1,6 @@
-import type { KheopskitConfig } from "@kheopskit/core";
+import type { KheopskitState } from "@kheopskit/core";
 import { createContext } from "react";
 
 export const KheopskitContext = createContext<{
-  config: KheopskitConfig;
+  state: KheopskitState;
 } | null>(null);
