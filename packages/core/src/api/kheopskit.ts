@@ -1,13 +1,13 @@
 import { Observable, combineLatest, map, shareReplay } from "rxjs";
 import { getAccounts$ } from "./accounts";
-import { resolveConfig } from "./config";
+import { getConfig } from "./config";
 import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
 import { getWallets$ } from "./wallets";
 
 export type { KheopskitConfig } from "./types";
 
-export const getKheopskit$ = (config: KheopskitConfig) => {
-  const c = resolveConfig(config);
+export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
+  const c = getConfig(config);
 
   return new Observable<{ wallets: Wallet[]; accounts: WalletAccount[] }>(
     (subscriber) => {

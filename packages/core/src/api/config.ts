@@ -1,12 +1,12 @@
 import type { KheopskitConfig } from "./types";
 
-export type ResolvedConfig = Required<KheopskitConfig>;
-
-export const DEFAULT_CONFIG: ResolvedConfig = {
+export const DEFAULT_CONFIG: Required<KheopskitConfig> = {
   autoReconnect: true,
   platforms: ["polkadot"],
 };
 
-export const resolveConfig = (config: KheopskitConfig): ResolvedConfig => {
+export const getConfig = (
+  config: Partial<KheopskitConfig> | undefined,
+): Required<KheopskitConfig> => {
   return Object.assign({}, DEFAULT_CONFIG, config);
 };

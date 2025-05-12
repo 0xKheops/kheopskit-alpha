@@ -9,11 +9,10 @@ import {
   shareReplay,
   take,
 } from "rxjs";
-import type { ResolvedConfig } from "./config";
 import { ethereumWallets$ } from "./ethereum/wallets";
 import { polkadotWallets$ } from "./polkadot/wallets";
 import { store } from "./store";
-import type { Wallet } from "./types";
+import type { KheopskitConfig, Wallet } from "./types";
 
 // lock the list of wallets to auto reconnect on first call
 const autoReconnectWalletIds$ = store.observable.pipe(
@@ -22,7 +21,7 @@ const autoReconnectWalletIds$ = store.observable.pipe(
   shareReplay(1),
 );
 
-export const getWallets$ = (config: ResolvedConfig) => {
+export const getWallets$ = (config: KheopskitConfig) => {
   return new Observable<Wallet[]>((subscriber) => {
     const observables = config.platforms.map<Observable<Wallet[]>>(
       (platform) => {

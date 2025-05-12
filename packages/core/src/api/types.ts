@@ -11,7 +11,7 @@ export type KheopskitStoreData = {
 };
 
 export type KheopskitConfig = {
-  autoReconnect?: boolean;
+  autoReconnect: boolean;
   platforms: WalletPlatform[];
 };
 

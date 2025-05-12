@@ -1,10 +1,9 @@
 import { Observable, combineLatest, map, of, shareReplay } from "rxjs";
-import type { ResolvedConfig } from "./config";
 import { ethereumAccounts$ } from "./ethereum/accounts";
 import { polkadotAccounts$ } from "./polkadot/accounts";
-import type { WalletAccount } from "./types";
+import type { KheopskitConfig, WalletAccount } from "./types";
 
-export const getAccounts$ = (config: ResolvedConfig) => {
+export const getAccounts$ = (config: KheopskitConfig) => {
   return new Observable<WalletAccount[]>((subscriber) => {
     const observables = config.platforms.map<Observable<WalletAccount[]>>(
       (platform) => {
