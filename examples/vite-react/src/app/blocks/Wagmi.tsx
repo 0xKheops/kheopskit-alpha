@@ -115,7 +115,7 @@ const ActiveAccount = () => {
 
   return (
     <div>
-      <h3>Best practive with Kheopskit</h3>
+      <h3>Best practice with Kheopskit</h3>
       <p className="text-muted-foreground text-sm">
         It's bad UX to have to switch the active Wagmi connector prior to do an
         action with it, as it can trigger wallet prompts.
