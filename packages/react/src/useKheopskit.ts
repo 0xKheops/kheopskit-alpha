@@ -1,4 +1,4 @@
-import { getKheopskit$, type KheopskitConfig } from "@kheopskit/core";
+import { type KheopskitConfig, getKheopskit$ } from "@kheopskit/core";
 import { bind } from "@react-rxjs/core";
 import { useContext } from "react";
 import { KheopskitContext } from "./context";
@@ -10,7 +10,7 @@ const DEFAULT_VALUE = {
 
 const [useKheopskit] = bind(
   (config: KheopskitConfig) => getKheopskit$(config),
-  DEFAULT_VALUE
+  DEFAULT_VALUE,
 );
 
 export const useWallets = () => {

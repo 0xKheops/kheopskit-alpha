@@ -1,19 +1,19 @@
 import { store } from "@/api/store";
 import type { PolkadotWallet } from "@/api/types";
-import { getWalletId, parseWalletId, type WalletId } from "@/utils/WalletId";
+import { type WalletId, getWalletId, parseWalletId } from "@/utils/WalletId";
 import { isEqual } from "lodash";
 import {
+  type InjectedExtension,
   connectInjectedExtension,
   getInjectedExtensions,
-  type InjectedExtension,
 } from "polkadot-api/pjs-signer";
 import {
   BehaviorSubject,
+  Observable,
   combineLatest,
   distinctUntilChanged,
   map,
   mergeMap,
-  Observable,
   of,
   shareReplay,
   timer,
@@ -56,7 +56,7 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
       .pipe(
         mergeMap((time) => timer(time)),
         map(() => getInjectedWalletsIds()),
-        distinctUntilChanged<WalletId[]>(isEqual)
+        distinctUntilChanged<WalletId[]>(isEqual),
       );
 
     const subscription = combineLatest([walletIds$, enabledExtensions$])
@@ -85,14 +85,14 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
                   connect: () => connect(id),
                 };
           });
-        })
+        }),
       )
       .subscribe(subscriber);
 
     return () => {
       subscription.unsubscribe();
     };
-  }
+  },
 ).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
 // TODO merge with wallet connect

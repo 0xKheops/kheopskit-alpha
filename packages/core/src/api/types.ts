@@ -1,10 +1,10 @@
+import type { WalletAccountId } from "@/utils";
 import type { WalletId } from "@/utils/WalletId";
-import type { EIP1193Provider } from "viem";
 import type {
   InjectedExtension,
   InjectedPolkadotAccount,
 } from "polkadot-api/pjs-signer";
-import type { WalletAccountId } from "@/utils";
+import type { EIP1193Provider } from "viem";
 
 export type KheopskitStoreData = {
   autoReconnect?: WalletId[];

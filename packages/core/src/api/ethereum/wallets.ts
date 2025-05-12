@@ -1,12 +1,12 @@
 import { store } from "@/api/store";
 import type { EthereumWallet } from "@/api/types";
-import { getWalletId, type WalletId } from "@/utils/WalletId";
-import { createStore, type EIP6963ProviderDetail } from "mipd";
+import { type WalletId, getWalletId } from "@/utils/WalletId";
+import { type EIP6963ProviderDetail, createStore } from "mipd";
 import {
   BehaviorSubject,
+  Observable,
   combineLatest,
   map,
-  Observable,
   shareReplay,
 } from "rxjs";
 import type { EIP1193Provider } from "viem";
@@ -27,7 +27,7 @@ const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
       unsubscribe();
       store.destroy();
     };
-  }
+  },
 ).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
 providersDetails$.subscribe(() => {
@@ -40,7 +40,7 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
 
     const connectWallet = async (
       walletId: WalletId,
-      provider: EIP1193Provider
+      provider: EIP1193Provider,
     ) => {
       if (enabledWalletIds$.value.has(walletId))
         throw new Error(`Extension ${walletId} already connected`);
@@ -58,7 +58,7 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
 
     const disconnectWallet = async (
       walletId: WalletId,
-      _provider: EIP1193Provider
+      _provider: EIP1193Provider,
     ) => {
       if (!enabledWalletIds$.value.has(walletId))
         throw new Error(`Extension ${walletId} is not connected`);
@@ -88,14 +88,14 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
               disconnect: () => disconnectWallet(walletId, provider),
             };
           });
-        })
+        }),
       )
       .subscribe(subscriber);
 
     return () => {
       sub.unsubscribe();
     };
-  }
+  },
 ).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
 ethereumWallets$.subscribe(() => {

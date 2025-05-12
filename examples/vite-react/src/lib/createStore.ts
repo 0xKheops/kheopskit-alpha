@@ -7,7 +7,7 @@ export const createStore = <T>(key: string, defaultValue: T) => {
   fromEvent<StorageEvent>(window, "storage")
     .pipe(
       filter((event) => event.key === key),
-      map((event) => parseData(event.newValue, defaultValue))
+      map((event) => parseData(event.newValue, defaultValue)),
     )
     .subscribe((newValue) => subject.next(newValue));
 

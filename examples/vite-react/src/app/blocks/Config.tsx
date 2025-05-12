@@ -1,7 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocalStorageConfig } from "@/lib/configStore";
-import { AppBlock } from "./AppBlock";
 import type { WalletPlatform } from "@kheopskit/core";
+import { AppBlock } from "./AppBlock";
 
 export const Config = () => (
   <AppBlock title="Config" description="Set initialization parameters">

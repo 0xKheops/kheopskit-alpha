@@ -14,7 +14,7 @@ export const SuspenseMonitorInner: FC<{ label: string }> = ({ label }) => {
       console.debug(
         "[Suspense] %s : %s ms",
         label,
-        (performance.now() - refStart.current).toFixed(2)
+        (performance.now() - refStart.current).toFixed(2),
       );
       clearTimeout(timeout);
     };

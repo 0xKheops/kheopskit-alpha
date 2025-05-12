@@ -5,7 +5,7 @@ export type WalletId = string;
 
 export const getWalletId = (
   platform: WalletPlatform,
-  identifier: string
+  identifier: string,
 ): WalletId => {
   if (!isWalletPlatform(platform)) throw new Error("Invalid platform");
   if (!identifier) throw new Error("Invalid name");

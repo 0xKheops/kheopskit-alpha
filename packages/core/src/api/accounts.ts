@@ -1,4 +1,4 @@
-import { combineLatest, map, Observable, of, shareReplay } from "rxjs";
+import { Observable, combineLatest, map, of, shareReplay } from "rxjs";
 import type { ResolvedConfig } from "./config";
 import { ethereumAccounts$ } from "./ethereum/accounts";
 import { polkadotAccounts$ } from "./polkadot/accounts";
@@ -14,7 +14,7 @@ export const getAccounts$ = (config: ResolvedConfig) => {
           case "ethereum":
             return ethereumAccounts$;
         }
-      }
+      },
     );
 
     const accounts$ = observables.length

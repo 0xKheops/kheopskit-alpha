@@ -1,15 +1,15 @@
-import { Wallets } from "./blocks/Wallets";
+import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
+import { useLocalStorageConfig } from "@/lib/configStore";
+import { wagmiConfig } from "@/lib/wagmi";
+import { KheopskitProvider } from "@kheopskit/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Github } from "lucide-react";
+import { WagmiProvider } from "wagmi";
 import { Accounts } from "./blocks/Accounts";
 import { Config } from "./blocks/Config";
-import { useLocalStorageConfig } from "@/lib/configStore";
-import { KheopskitProvider } from "@kheopskit/react";
-import { Toaster } from "@/components/ui/sonner";
-import { WagmiProvider } from "wagmi";
-import { wagmiConfig } from "@/lib/wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Wagmi } from "./blocks/Wagmi";
-import { Github } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Wallets } from "./blocks/Wallets";
 
 const queryClient = new QueryClient();
 

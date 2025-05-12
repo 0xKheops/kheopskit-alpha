@@ -1,18 +1,18 @@
 import type { EthereumAccount, EthereumWallet } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
 import {
+  Observable,
   combineLatest,
   map,
-  Observable,
   of,
   shareReplay,
   switchMap,
 } from "rxjs";
-import { getAddress, type EIP1193Provider } from "viem";
+import { type EIP1193Provider, getAddress } from "viem";
 import { ethereumWallets$ } from "./wallets";
 
 const getWalletAccounts$ = (
-  wallet: EthereumWallet
+  wallet: EthereumWallet,
 ): Observable<EthereumAccount[]> => {
   if (!wallet.isConnected) return of([]);
 
@@ -59,16 +59,16 @@ export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
         switchMap((wallets) =>
           wallets.length
             ? combineLatest(wallets.map(getWalletAccounts$))
-            : of([])
+            : of([]),
         ),
-        map((accounts) => accounts.flat())
+        map((accounts) => accounts.flat()),
       )
       .subscribe(subscriber);
 
     return () => {
       sub.unsubscribe();
     };
-  }
+  },
 ).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
 ethereumAccounts$.subscribe(() => {

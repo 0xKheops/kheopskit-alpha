@@ -2,9 +2,9 @@ import type { PolkadotAccount, PolkadotWallet } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
 import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
 import {
+  Observable,
   combineLatest,
   map,
-  Observable,
   of,
   shareReplay,
   switchMap,
@@ -12,7 +12,7 @@ import {
 import { polkadotWallets$ } from "./wallets";
 
 const getWalletAccounts$ = (
-  wallet: PolkadotWallet
+  wallet: PolkadotWallet,
 ): Observable<PolkadotAccount[]> => {
   if (!wallet.isConnected) return of([]);
 
@@ -47,16 +47,16 @@ export const polkadotAccounts$ = new Observable<PolkadotAccount[]>(
         switchMap((wallets) =>
           wallets.length
             ? combineLatest(wallets.map(getWalletAccounts$))
-            : of([])
+            : of([]),
         ),
-        map((accounts) => accounts.flat())
+        map((accounts) => accounts.flat()),
       )
       .subscribe(subscriber);
 
     return () => {
       sub.unsubscribe();
     };
-  }
+  },
 ).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
 polkadotAccounts$.subscribe(() => {

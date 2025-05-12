@@ -6,11 +6,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useWallets } from "@kheopskit/react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAccount, useConnect, useConnections, useSignMessage } from "wagmi";
 import { AppBlock } from "./AppBlock";
-import { useWallets } from "@kheopskit/react";
-import { toast } from "sonner";
 
 export const Wagmi = () => {
   return (
@@ -82,7 +82,7 @@ const ActiveAccount = () => {
 
   const account = useMemo(
     () => accounts.find((a) => a.id === accountId) ?? null,
-    [accountId, accounts]
+    [accountId, accounts],
   );
 
   const handleClick = async () => {
@@ -96,8 +96,8 @@ const ActiveAccount = () => {
       (c) =>
         c.connector.id === wallet.providerId &&
         c.accounts.some(
-          (a) => a.toLowerCase() === account.address.toLowerCase()
-        )
+          (a) => a.toLowerCase() === account.address.toLowerCase(),
+        ),
     );
     if (!connection) return;
 

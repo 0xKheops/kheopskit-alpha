@@ -1,10 +1,10 @@
 import {
+  Observable,
   combineLatest,
   distinct,
   filter,
   map,
   mergeMap,
-  Observable,
   of,
   shareReplay,
   take,
@@ -19,7 +19,7 @@ import type { Wallet } from "./types";
 const autoReconnectWalletIds$ = store.observable.pipe(
   map((s) => s.autoReconnect ?? []),
   take(1),
-  shareReplay(1)
+  shareReplay(1),
 );
 
 export const getWallets$ = (config: ResolvedConfig) => {
@@ -32,7 +32,7 @@ export const getWallets$ = (config: ResolvedConfig) => {
           case "ethereum":
             return ethereumWallets$;
         }
-      }
+      },
     );
 
     const wallets$ = observables.length
@@ -43,9 +43,9 @@ export const getWallets$ = (config: ResolvedConfig) => {
       .pipe(
         filter(([, walletIds]) => config.autoReconnect && !!walletIds?.length),
         mergeMap(([wallets, walletIds]) =>
-          wallets.filter((wallet) => walletIds?.includes(wallet.id))
+          wallets.filter((wallet) => walletIds?.includes(wallet.id)),
         ),
-        distinct((w) => w.id)
+        distinct((w) => w.id),
       )
       .subscribe(async (wallet) => {
         if (wallet.isConnected) {

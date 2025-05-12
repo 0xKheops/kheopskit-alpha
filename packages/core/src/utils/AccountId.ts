@@ -6,7 +6,7 @@ export type WalletAccountId = string;
 
 export const getWalletAccountId = (
   walletId: string,
-  address: SS58String
+  address: SS58String,
 ): WalletAccountId => {
   if (!walletId) throw new Error("Missing walletId");
   if (!isValidAddress(address)) throw new Error("Invalid address");

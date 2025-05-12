@@ -1,8 +1,8 @@
 import type { KheopskitConfig } from "@kheopskit/core";
 import { Subscribe } from "@react-rxjs/core";
 import type { FC, PropsWithChildren } from "react";
-import { KheopskitContext } from "./context";
 import { SuspenseMonitor } from "./SuspenseMonitor";
+import { KheopskitContext } from "./context";
 
 export const KheopskitProvider: FC<
   PropsWithChildren & { config: KheopskitConfig }

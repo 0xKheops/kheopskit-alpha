@@ -1,4 +1,4 @@
-import { combineLatest, map, Observable, shareReplay } from "rxjs";
+import { Observable, combineLatest, map, shareReplay } from "rxjs";
 import { getAccounts$ } from "./accounts";
 import { resolveConfig } from "./config";
 import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
@@ -18,6 +18,6 @@ export const getKheopskit$ = (config: KheopskitConfig) => {
       return () => {
         subscription.unsubscribe();
       };
-    }
+    },
   ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
 };

@@ -1,7 +1,7 @@
+import { type WalletId, parseWalletId } from "@/utils/WalletId";
 import { createStore } from "@/utils/createStore";
-import type { KheopskitStoreData } from "./types";
 import { uniq } from "lodash";
-import { parseWalletId, type WalletId } from "@/utils/WalletId";
+import type { KheopskitStoreData } from "./types";
 
 const LOCAL_STORAGE_KEY = "kheopskit";
 
@@ -21,7 +21,7 @@ export const removeEnabledWalletId = (walletId: WalletId) => {
   storage.mutate((prev) => ({
     ...prev,
     autoReconnect: uniq(
-      (prev.autoReconnect ?? []).filter((id) => id !== walletId)
+      (prev.autoReconnect ?? []).filter((id) => id !== walletId),
     ),
   }));
 };

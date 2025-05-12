@@ -1,6 +1,6 @@
 import type { KheopskitConfig } from "@kheopskit/core";
-import { createStore } from "./createStore";
 import { useSyncExternalStore } from "react";
+import { createStore } from "./createStore";
 
 const DEFAULT_CONFIG: KheopskitConfig = {
   platforms: ["ethereum", "polkadot"],
@@ -12,7 +12,7 @@ export const configStore = createStore("config", DEFAULT_CONFIG);
 export const useLocalStorageConfig = () => {
   const config = useSyncExternalStore(
     configStore.subscribe,
-    configStore.getSnapshot
+    configStore.getSnapshot,
   );
 
   const setAutoReconnect = (enabled: boolean) => {
@@ -24,7 +24,7 @@ export const useLocalStorageConfig = () => {
 
   const setPlatformEnabled = (
     platform: KheopskitConfig["platforms"][number],
-    enabled: boolean
+    enabled: boolean,
   ) => {
     configStore.mutate((prev) => ({
       ...prev,
