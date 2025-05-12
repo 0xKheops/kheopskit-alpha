@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocalStorageConfig } from "@/lib/configStore";
 import type { WalletPlatform } from "@kheopskit/core";
+import { useCallback } from "react";
 import { AppBlock } from "./AppBlock";
 
 export const Config = () => (
@@ -8,6 +10,7 @@ export const Config = () => (
     <div className="flex flex-col gap-4">
       <Platforms />
       <AutoReconnect />
+      <Reset />
     </div>
   </AppBlock>
 );
@@ -59,7 +62,7 @@ const Platforms = () => {
           <div key={platform} className="flex items-center space-x-2">
             <Checkbox
               id={platform}
-              checked={config.platforms.includes(platform)}
+              checked={config.platforms?.includes(platform)}
               onCheckedChange={(checked) => {
                 if (typeof checked !== "boolean") return;
                 setPlatformEnabled(platform, checked);
@@ -73,6 +76,19 @@ const Platforms = () => {
             </label>
           </div>
         ))}
+    </div>
+  );
+};
+
+const Reset = () => {
+  const reset = useCallback(() => {
+    localStorage.clear();
+    window.location.reload();
+  }, []);
+
+  return (
+    <div className="w-full text-right">
+      <Button onClick={reset}>Reset to defaults</Button>
     </div>
   );
 };

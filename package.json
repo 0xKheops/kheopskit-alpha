@@ -27,7 +27,7 @@
     "@biomejs/biome": "^1.9.4"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm biome format --write",
+    "pre-commit": "pnpm biome format --write .",
     "pre-push": "pnpm biome check ."
   }
 }

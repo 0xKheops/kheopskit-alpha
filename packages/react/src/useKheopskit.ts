@@ -16,7 +16,7 @@ const [useKheopskit] = bind(
 export const useWallets = () => {
   const ctx = useContext(KheopskitContext);
   if (!ctx)
-    throw new Error("useWallets must be used within a KheopskitProvider");
+    throw new Error("useWallets can't be used without a KheopskitProvider");
 
   return useKheopskit(ctx.config);
 };
