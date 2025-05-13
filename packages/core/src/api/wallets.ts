@@ -1,3 +1,4 @@
+import { sortWallets } from "@/utils/sortWallets";
 import {
   Observable,
   combineLatest,
@@ -35,7 +36,9 @@ export const getWallets$ = (config: KheopskitConfig) => {
     );
 
     const wallets$ = observables.length
-      ? combineLatest(observables).pipe(map((wallets) => wallets.flat()))
+      ? combineLatest(observables).pipe(
+          map((wallets) => wallets.flat().sort(sortWallets)),
+        )
       : of([]);
 
     const subAutoReconnect = combineLatest([wallets$, autoReconnectWalletIds$])

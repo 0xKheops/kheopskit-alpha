@@ -66,24 +66,16 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
             const { identifier } = parseWalletId(id);
             const extension = enabledExtensions.get(id);
 
-            return extension
-              ? {
-                  id,
-                  platform: "polkadot",
-                  name: identifier,
-                  extensionId: identifier,
-                  isConnected: true,
-                  extension,
-                  disconnect: () => disconnect(id),
-                }
-              : {
-                  id,
-                  platform: "polkadot",
-                  name: identifier,
-                  extensionId: identifier,
-                  isConnected: false,
-                  connect: () => connect(id),
-                };
+            return {
+              id,
+              platform: "polkadot",
+              name: identifier,
+              extensionId: identifier,
+              extension,
+              isConnected: !!extension,
+              connect: () => connect(id),
+              disconnect: () => disconnect(id),
+            };
           });
         }),
       )
@@ -98,6 +90,6 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
 // TODO merge with wallet connect
 export const polkadotWallets$ = polkadotInjectedWallets$;
 
-polkadotWallets$.subscribe(() => {
-  console.count("[kheopskit] polkadotWallets$ emit");
-});
+// polkadotWallets$.subscribe(() => {
+//   console.count("[kheopskit] polkadotWallets$ emit");
+// });

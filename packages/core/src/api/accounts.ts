@@ -1,3 +1,4 @@
+import { sortAccounts } from "@/utils/sortAccounts";
 import { Observable, combineLatest, map, of, shareReplay } from "rxjs";
 import { ethereumAccounts$ } from "./ethereum/accounts";
 import { polkadotAccounts$ } from "./polkadot/accounts";
@@ -17,7 +18,9 @@ export const getAccounts$ = (config: KheopskitConfig) => {
     );
 
     const accounts$ = observables.length
-      ? combineLatest(observables).pipe(map((accounts) => accounts.flat()))
+      ? combineLatest(observables).pipe(
+          map((accounts) => accounts.flat().sort(sortAccounts)),
+        )
       : of([]);
 
     const sub = accounts$.subscribe(subscriber);

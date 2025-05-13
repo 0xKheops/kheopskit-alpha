@@ -11,28 +11,18 @@ export type KheopskitConfig = {
   platforms: WalletPlatform[];
 };
 
-export type PolkadotDisabledInjectedWallet = {
+export type PolkadotInjectedWallet = {
   id: WalletId;
   platform: "polkadot";
   extensionId: string;
+  extension: InjectedExtension | undefined;
   name: string;
-  isConnected: false;
+  isConnected: boolean;
   connect: () => Promise<void>;
-};
-
-export type PolkadotEnabledInjectedWallet = {
-  id: WalletId;
-  platform: "polkadot";
-  extensionId: string;
-  extension: InjectedExtension;
-  name: string;
-  isConnected: true;
   disconnect: () => void;
 };
 
-export type PolkadotWallet =
-  | PolkadotDisabledInjectedWallet
-  | PolkadotEnabledInjectedWallet;
+export type PolkadotWallet = PolkadotInjectedWallet; // | PolkadotWalletConnectWallet
 
 export type EthereumWallet = {
   platform: "ethereum";
