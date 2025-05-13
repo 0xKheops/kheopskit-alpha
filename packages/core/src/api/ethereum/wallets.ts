@@ -44,7 +44,8 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
     ) => {
       if (enabledWalletIds$.value.has(walletId))
         throw new Error(`Extension ${walletId} already connected`);
-      provider.request({
+
+      await provider.request({
         method: "eth_requestAccounts",
       });
 
