@@ -26,7 +26,10 @@
   "dependencies": {
     "@biomejs/biome": "^1.9.4"
   },
+  "lint-staged": {
+    "*": "pnpm biome check . --fix"
+  },
   "simple-git-hooks": {
-    "pre-commit": "pnpm biome check . --fix"
+    "pre-commit": "npx lint-staged"
   }
 }
