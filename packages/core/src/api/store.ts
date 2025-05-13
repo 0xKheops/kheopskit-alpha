@@ -1,9 +1,12 @@
 import { type WalletId, parseWalletId } from "@/utils/WalletId";
 import { createStore } from "@/utils/createStore";
 import { uniq } from "lodash";
-import type { KheopskitStoreData } from "./types";
 
 const LOCAL_STORAGE_KEY = "kheopskit";
+
+export type KheopskitStoreData = {
+  autoReconnect?: WalletId[];
+};
 
 const DEFAULT_SETTINGS: KheopskitStoreData = {};
 

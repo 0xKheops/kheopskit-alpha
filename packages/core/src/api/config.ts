@@ -1,6 +1,6 @@
 import type { KheopskitConfig } from "./types";
 
-export const DEFAULT_CONFIG: Required<KheopskitConfig> = {
+const DEFAULT_CONFIG: Required<KheopskitConfig> = {
   autoReconnect: true,
   platforms: ["polkadot"],
 };

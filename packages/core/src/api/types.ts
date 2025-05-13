@@ -6,10 +6,6 @@ import type {
 } from "polkadot-api/pjs-signer";
 import type { EIP1193Provider } from "viem";
 
-export type KheopskitStoreData = {
-  autoReconnect?: WalletId[];
-};
-
 export type KheopskitConfig = {
   autoReconnect: boolean;
   platforms: WalletPlatform[];
@@ -33,8 +29,6 @@ export type PolkadotEnabledInjectedWallet = {
   isConnected: true;
   disconnect: () => void;
 };
-
-// TODO export type PolkadotWalletConnectWallet = {}
 
 export type PolkadotWallet =
   | PolkadotDisabledInjectedWallet
