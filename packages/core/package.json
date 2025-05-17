@@ -29,6 +29,10 @@
     "rxjs": ">=7.8.0"
   },
   "dependencies": {
+    "@walletconnect/modal": "^2.7.0",
+    "@walletconnect/types": "^2.20.2",
+    "@walletconnect/universal-provider": "^2.20.2",
+    "@walletconnect/utils": "^2.20.2",
     "lodash": "^4.17.21",
     "mipd": "^0.0.7",
     "viem": "^2.29.1"

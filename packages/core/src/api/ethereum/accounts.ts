@@ -1,8 +1,10 @@
 import type { EthereumAccount, EthereumWallet } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
+import { logObservable } from "@/utils/logObservable";
 import {
   Observable,
   combineLatest,
+  distinctUntilChanged,
   map,
   of,
   shareReplay,
@@ -62,6 +64,7 @@ export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
             : of([]),
         ),
         map((accounts) => accounts.flat()),
+        distinctUntilChanged(isSameAccountsList),
       )
       .subscribe(subscriber);
 
@@ -69,8 +72,12 @@ export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
       sub.unsubscribe();
     };
   },
-).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+).pipe(
+  logObservable("ethereumAccounts$"),
+  shareReplay({ refCount: true, bufferSize: 1 }),
+);
 
-ethereumAccounts$.subscribe(() => {
-  console.count("[kheopskit] ethereumAccounts$ emit");
-});
+const isSameAccountsList = (a: EthereumAccount[], b: EthereumAccount[]) => {
+  if (a.length !== b.length) return false;
+  return a.every((account, i) => account.id === b[i]?.id);
+};

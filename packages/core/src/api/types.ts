@@ -9,6 +9,10 @@ import type { EIP1193Provider } from "viem";
 export type KheopskitConfig = {
   autoReconnect: boolean;
   platforms: WalletPlatform[];
+  // walletConnect?: {
+  //   projectId:string
+
+  // }
 };
 
 export type PolkadotInjectedWallet = {

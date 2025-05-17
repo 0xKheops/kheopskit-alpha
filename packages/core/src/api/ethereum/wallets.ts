@@ -1,6 +1,7 @@
 import { store } from "@/api/store";
 import type { EthereumWallet } from "@/api/types";
 import { type WalletId, getWalletId } from "@/utils/WalletId";
+import { logObservable } from "@/utils/logObservable";
 import { type EIP6963ProviderDetail, createStore } from "mipd";
 import {
   BehaviorSubject,
@@ -28,11 +29,10 @@ const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
       store.destroy();
     };
   },
-).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-
-providersDetails$.subscribe(() => {
-  console.count("[kheopskit] providers$ emit");
-});
+).pipe(
+  logObservable("providersDetails$"),
+  shareReplay({ refCount: true, bufferSize: 1 }),
+);
 
 export const ethereumWallets$ = new Observable<EthereumWallet[]>(
   (subscriber) => {
@@ -96,8 +96,7 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
       sub.unsubscribe();
     };
   },
-).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
-
-ethereumWallets$.subscribe(() => {
-  console.count("[kheopskit] ethereumWallets$ emit");
-});
+).pipe(
+  logObservable("ethereumWallets$"),
+  shareReplay({ refCount: true, bufferSize: 1 }),
+);

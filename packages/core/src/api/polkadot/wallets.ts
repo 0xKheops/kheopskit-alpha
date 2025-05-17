@@ -1,6 +1,7 @@
 import { store } from "@/api/store";
 import type { PolkadotWallet } from "@/api/types";
 import { type WalletId, getWalletId, parseWalletId } from "@/utils/WalletId";
+import { logObservable } from "@/utils/logObservable";
 import { isEqual } from "lodash";
 import {
   type InjectedExtension,
@@ -82,14 +83,14 @@ const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
       .subscribe(subscriber);
 
     return () => {
+      // console.log("Unsubscribing from polkadotInjectedWallets$");
       subscription.unsubscribe();
     };
   },
-).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+).pipe(
+  logObservable("polkadotInjectedWallets$"),
+  shareReplay({ refCount: true, bufferSize: 1 }),
+);
 
 // TODO merge with wallet connect
 export const polkadotWallets$ = polkadotInjectedWallets$;
-
-// polkadotWallets$.subscribe(() => {
-//   console.count("[kheopskit] polkadotWallets$ emit");
-// });

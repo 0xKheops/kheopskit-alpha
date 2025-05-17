@@ -1,4 +1,4 @@
-import { Observable, combineLatest, shareReplay, tap } from "rxjs";
+import { Observable, combineLatest, shareReplay } from "rxjs";
 import { getAccounts$ } from "./accounts";
 import { getConfig } from "./config";
 import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
@@ -21,13 +21,13 @@ export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
       subscription.unsubscribe();
     };
   }).pipe(
-    tap((state) => {
-      console.debug(
-        "EMIT kheopskit$ wallets:%s accounts:%s",
-        state.wallets.length ?? 0,
-        state.accounts.length ?? 0,
-      );
-    }),
+    // tap((state) => {
+    //   console.debug(
+    //     "[kheopskit] observable kheopskit$ wallets:%s accounts:%s",
+    //     state.wallets.length ?? 0,
+    //     state.accounts.length ?? 0,
+    //   );
+    // }),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 };

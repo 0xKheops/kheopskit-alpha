@@ -1,9 +1,14 @@
 import type { PolkadotAccount, PolkadotWallet } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
-import type { InjectedPolkadotAccount } from "polkadot-api/pjs-signer";
+import { logObservable } from "@/utils/logObservable";
+import type {
+  InjectedExtension,
+  InjectedPolkadotAccount,
+} from "polkadot-api/pjs-signer";
 import {
   Observable,
   combineLatest,
+  distinctUntilChanged,
   map,
   of,
   shareReplay,
@@ -25,13 +30,15 @@ const getWalletAccounts$ = (
       walletId: wallet.id,
     });
 
+    const extension = wallet.extension as InjectedExtension;
+
     // subscribe to changes
-    const unsubscribe = wallet.extension.subscribe((accounts) => {
+    const unsubscribe = extension.subscribe((accounts) => {
       subscriber.next(accounts.map(getAccount));
     });
 
     // initial value
-    subscriber.next(wallet.extension.getAccounts().map(getAccount));
+    subscriber.next(extension.getAccounts().map(getAccount));
 
     return () => {
       return unsubscribe();
@@ -50,6 +57,7 @@ export const polkadotAccounts$ = new Observable<PolkadotAccount[]>(
             : of([]),
         ),
         map((accounts) => accounts.flat()),
+        distinctUntilChanged(isSameAccountsList),
       )
       .subscribe(subscriber);
 
@@ -57,8 +65,12 @@ export const polkadotAccounts$ = new Observable<PolkadotAccount[]>(
       sub.unsubscribe();
     };
   },
-).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
+).pipe(
+  logObservable("polkadotAccounts$"),
+  shareReplay({ refCount: true, bufferSize: 1 }),
+);
 
-polkadotAccounts$.subscribe(() => {
-  console.count("[kheopskit] polkadotAccounts$ emit");
-});
+const isSameAccountsList = (a: PolkadotAccount[], b: PolkadotAccount[]) => {
+  if (a.length !== b.length) return false;
+  return a.every((account, i) => account.id === b[i]?.id);
+};
