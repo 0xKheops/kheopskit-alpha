@@ -29,7 +29,7 @@
     "rxjs": ">=7.8.0"
   },
   "dependencies": {
-    "@walletconnect/modal": "^2.7.0",
+    "@reown/appkit": "^1.7.5",
     "@walletconnect/types": "^2.20.2",
     "@walletconnect/universal-provider": "^2.20.2",
     "@walletconnect/utils": "^2.20.2",

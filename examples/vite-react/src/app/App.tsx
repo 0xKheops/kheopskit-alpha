@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import { useLocalStorageConfig } from "@/lib/configStore";
+import { useLocalStorageConfig } from "@/lib/config/configStore";
 import { wagmiConfig } from "@/lib/wagmi";
 import { KheopskitProvider } from "@kheopskit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

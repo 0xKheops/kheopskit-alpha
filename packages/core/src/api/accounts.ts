@@ -1,16 +1,23 @@
 import { sortAccounts } from "@/utils/sortAccounts";
 import { Observable, combineLatest, map, of, shareReplay } from "rxjs";
 import { ethereumAccounts$ } from "./ethereum/accounts";
-import { polkadotAccounts$ } from "./polkadot/accounts";
-import type { KheopskitConfig, WalletAccount } from "./types";
+import { getPolkadotAccounts$ } from "./polkadot/accounts";
+import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
 
-export const getAccounts$ = (config: KheopskitConfig) => {
+export const getAccounts$ = (
+  config: KheopskitConfig,
+  wallets: Observable<Wallet[]>,
+) => {
   return new Observable<WalletAccount[]>((subscriber) => {
     const observables = config.platforms.map<Observable<WalletAccount[]>>(
       (platform) => {
         switch (platform) {
           case "polkadot":
-            return polkadotAccounts$;
+            return getPolkadotAccounts$(
+              wallets.pipe(
+                map((w) => w.filter((w) => w.platform === "polkadot")),
+              ),
+            );
           case "ethereum":
             return ethereumAccounts$;
         }

@@ -1,5 +1,6 @@
 import { Observable, combineLatest, shareReplay } from "rxjs";
 import { getAccounts$ } from "./accounts";
+import { getAppKit } from "./appKit";
 import { getConfig } from "./config";
 import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
 import { getWallets$ } from "./wallets";
@@ -10,11 +11,16 @@ export type KheopskitState = { wallets: Wallet[]; accounts: WalletAccount[] };
 
 export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
   const kc = getConfig(config);
+  const appKit = getAppKit(kc);
+
+  console.log("[kheopskit] config", kc);
 
   return new Observable<KheopskitState>((subscriber) => {
+    const wallets$ = getWallets$(kc, appKit);
+
     const subscription = combineLatest({
-      wallets: getWallets$(kc),
-      accounts: getAccounts$(kc),
+      wallets: wallets$,
+      accounts: getAccounts$(kc, wallets$),
     }).subscribe(subscriber);
 
     return () => {

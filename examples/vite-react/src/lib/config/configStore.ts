@@ -1,10 +1,11 @@
 import type { KheopskitConfig } from "@kheopskit/core";
 import { useCallback, useSyncExternalStore } from "react";
 import { createStore } from "./createStore";
+import { ensureConfig } from "./helper";
 
 export const configStore = createStore<Partial<KheopskitConfig>>(
   "demo.config",
-  { autoReconnect: true, platforms: ["polkadot"] },
+  ensureConfig({ autoReconnect: true, platforms: ["polkadot"] }),
 );
 
 export const useLocalStorageConfig = () => {
@@ -14,24 +15,28 @@ export const useLocalStorageConfig = () => {
   );
 
   const setAutoReconnect = useCallback((enabled: boolean) => {
-    configStore.mutate((prev) => ({
-      ...prev,
-      autoReconnect: enabled,
-    }));
+    configStore.mutate((prev) =>
+      ensureConfig({
+        ...prev,
+        autoReconnect: enabled,
+      }),
+    );
   }, []);
 
   const setPlatformEnabled = useCallback(
     (platform: KheopskitConfig["platforms"][number], enabled: boolean) => {
       configStore.mutate((prev) => {
-        const platforms = prev?.platforms ?? [];
-        return {
-          ...(prev ?? {}),
-          platforms: enabled
-            ? platforms.includes(platform)
-              ? platforms
-              : platforms.concat(platform)
-            : platforms.filter((p) => p !== platform),
-        };
+        const prevPlatforms = prev?.platforms ?? [];
+        const platforms = enabled
+          ? prevPlatforms.includes(platform)
+            ? prevPlatforms
+            : prevPlatforms.concat(platform)
+          : prevPlatforms.filter((p) => p !== platform);
+
+        return ensureConfig({
+          ...prev,
+          platforms,
+        });
       });
     },
     [],

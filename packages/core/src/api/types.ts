@@ -1,5 +1,8 @@
 import type { WalletAccountId } from "@/utils";
 import type { WalletId } from "@/utils/WalletId";
+import type { AppKit } from "@reown/appkit/core";
+import type { AppKitNetwork } from "@reown/appkit/networks";
+import type { Metadata } from "@walletconnect/universal-provider";
 import type {
   InjectedExtension,
   InjectedPolkadotAccount,
@@ -9,15 +12,24 @@ import type { EIP1193Provider } from "viem";
 export type KheopskitConfig = {
   autoReconnect: boolean;
   platforms: WalletPlatform[];
-  // walletConnect?: {
-  //   projectId:string
-
-  // }
+  walletConnect?: {
+    projectId: string;
+    metadata: Metadata;
+    /** Defaults to wss://relay.walletconnect.com */
+    relayUrl?: string;
+    /**
+     * list of CAIP-13 ids of polkadot-sdk chains
+     * see https://docs.reown.com/advanced/multichain/polkadot/dapp-integration-guide#walletconnect-code%2Fcomponent-setup
+     */
+    // polkadotChainIds: string[];
+    networks: [AppKitNetwork, ...AppKitNetwork[]];
+  };
 };
 
 export type PolkadotInjectedWallet = {
   id: WalletId;
   platform: "polkadot";
+  type: "injected";
   extensionId: string;
   extension: InjectedExtension | undefined;
   name: string;
@@ -26,7 +38,18 @@ export type PolkadotInjectedWallet = {
   disconnect: () => void;
 };
 
-export type PolkadotWallet = PolkadotInjectedWallet; // | PolkadotWalletConnectWallet
+export type PolkadotAppKitWallet = {
+  id: WalletId;
+  platform: "polkadot";
+  type: "appKit";
+  appKit: AppKit;
+  name: string;
+  isConnected: boolean;
+  connect: () => Promise<void>;
+  disconnect: () => void;
+};
+
+export type PolkadotWallet = PolkadotInjectedWallet | PolkadotAppKitWallet;
 
 export type EthereumWallet = {
   platform: "ethereum";

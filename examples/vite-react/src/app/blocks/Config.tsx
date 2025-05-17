@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useLocalStorageConfig } from "@/lib/configStore";
+import { useLocalStorageConfig } from "@/lib/config/configStore";
 import type { WalletPlatform } from "@kheopskit/core";
 import { useCallback } from "react";
 import { AppBlock } from "./AppBlock";

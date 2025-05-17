@@ -1,7 +1,8 @@
 import { store } from "@/api/store";
-import type { PolkadotWallet } from "@/api/types";
+import type { PolkadotInjectedWallet, PolkadotWallet } from "@/api/types";
 import { type WalletId, getWalletId, parseWalletId } from "@/utils/WalletId";
 import { logObservable } from "@/utils/logObservable";
+import type { AppKit } from "@reown/appkit/core";
 import { isEqual } from "lodash";
 import {
   type InjectedExtension,
@@ -19,78 +20,102 @@ import {
   shareReplay,
   timer,
 } from "rxjs";
+import { getPolkadotAppKitWallet$ } from "./walletConnect";
 
 const getInjectedWalletsIds = () =>
   getInjectedExtensions().map((name) => getWalletId("polkadot", name));
 
-const polkadotInjectedWallets$ = new Observable<PolkadotWallet[]>(
-  (subscriber) => {
-    const enabledExtensions$ = new BehaviorSubject<
-      Map<WalletId, InjectedExtension>
-    >(new Map());
+export const polkadotInjectedWallets$ = new Observable<
+  PolkadotInjectedWallet[]
+>((subscriber) => {
+  const enabledExtensions$ = new BehaviorSubject<
+    Map<WalletId, InjectedExtension>
+  >(new Map());
 
-    const connect = async (walletId: WalletId) => {
-      if (enabledExtensions$.value.has(walletId))
-        throw new Error(`Extension ${walletId} already connected`);
-      const { identifier } = parseWalletId(walletId);
-      const extension = await connectInjectedExtension(identifier);
+  const connect = async (walletId: WalletId) => {
+    if (enabledExtensions$.value.has(walletId))
+      throw new Error(`Extension ${walletId} already connected`);
+    const { identifier } = parseWalletId(walletId);
+    const extension = await connectInjectedExtension(identifier);
 
-      const newMap = new Map(enabledExtensions$.value);
-      newMap.set(walletId, extension);
-      enabledExtensions$.next(newMap);
+    const newMap = new Map(enabledExtensions$.value);
+    newMap.set(walletId, extension);
+    enabledExtensions$.next(newMap);
 
-      store.addEnabledWalletId(walletId);
-    };
+    store.addEnabledWalletId(walletId);
+  };
 
-    const disconnect = (walletId: WalletId) => {
-      if (!enabledExtensions$.value.has(walletId))
-        throw new Error(`Extension ${walletId} is not connected`);
+  const disconnect = (walletId: WalletId) => {
+    if (!enabledExtensions$.value.has(walletId))
+      throw new Error(`Extension ${walletId} is not connected`);
 
-      const newMap = new Map(enabledExtensions$.value);
-      newMap.delete(walletId);
-      enabledExtensions$.next(newMap);
+    const newMap = new Map(enabledExtensions$.value);
+    newMap.delete(walletId);
+    enabledExtensions$.next(newMap);
 
-      store.removeEnabledWalletId(walletId);
-    };
+    store.removeEnabledWalletId(walletId);
+  };
 
-    const walletIds$ = of(0, 200, 500, 1000) // poll for wallets that register after page load
-      .pipe(
-        mergeMap((time) => timer(time)),
-        map(() => getInjectedWalletsIds()),
-        distinctUntilChanged<WalletId[]>(isEqual),
-      );
+  const walletIds$ = of(0, 200, 500, 1000) // poll for wallets that inject after page load
+    .pipe(
+      mergeMap((time) => timer(time)),
+      map(() => getInjectedWalletsIds()),
+      distinctUntilChanged<WalletId[]>(isEqual),
+    );
 
-    const subscription = combineLatest([walletIds$, enabledExtensions$])
-      .pipe(
-        map(([walletIds, enabledExtensions]) => {
-          return walletIds.map((id): PolkadotWallet => {
-            const { identifier } = parseWalletId(id);
-            const extension = enabledExtensions.get(id);
+  const subscription = combineLatest([walletIds$, enabledExtensions$])
+    .pipe(
+      map(([walletIds, enabledExtensions]) => {
+        return walletIds.map((id): PolkadotInjectedWallet => {
+          const { identifier } = parseWalletId(id);
+          const extension = enabledExtensions.get(id);
 
-            return {
-              id,
-              platform: "polkadot",
-              name: identifier,
-              extensionId: identifier,
-              extension,
-              isConnected: !!extension,
-              connect: () => connect(id),
-              disconnect: () => disconnect(id),
-            };
-          });
-        }),
-      )
-      .subscribe(subscriber);
+          return {
+            id,
+            type: "injected",
+            platform: "polkadot",
+            name: identifier,
+            extensionId: identifier,
+            extension,
+            isConnected: !!extension,
+            connect: () => connect(id),
+            disconnect: () => disconnect(id),
+          };
+        });
+      }),
+    )
+    .subscribe(subscriber);
 
-    return () => {
-      // console.log("Unsubscribing from polkadotInjectedWallets$");
-      subscription.unsubscribe();
-    };
-  },
-).pipe(
+  return () => {
+    // console.log("Unsubscribing from polkadotInjectedWallets$");
+    subscription.unsubscribe();
+  };
+}).pipe(
   logObservable("polkadotInjectedWallets$"),
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
-// TODO merge with wallet connect
-export const polkadotWallets$ = polkadotInjectedWallets$;
+export const getPolkadotWallets$ = (
+  // config: KheopskitConfig,
+  appKit: AppKit | null,
+) => {
+  return new Observable<PolkadotWallet[]>((subscriber) => {
+    const subscription = combineLatest([
+      polkadotInjectedWallets$,
+      getPolkadotAppKitWallet$(appKit),
+    ])
+      .pipe(
+        map(([injectedWallets, appKitWallet]) =>
+          appKitWallet ? [...injectedWallets, appKitWallet] : injectedWallets,
+        ),
+      )
+      .subscribe(subscriber);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }).pipe(
+    logObservable("getPolkadotWallets$"),
+    shareReplay({ refCount: true, bufferSize: 1 }),
+  );
+};

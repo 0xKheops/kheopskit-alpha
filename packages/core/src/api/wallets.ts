@@ -1,4 +1,5 @@
 import { sortWallets } from "@/utils/sortWallets";
+import type { AppKit } from "@reown/appkit/core";
 import {
   Observable,
   combineLatest,
@@ -11,7 +12,7 @@ import {
   take,
 } from "rxjs";
 import { ethereumWallets$ } from "./ethereum/wallets";
-import { polkadotWallets$ } from "./polkadot/wallets";
+import { getPolkadotWallets$ } from "./polkadot/wallets";
 import { store } from "./store";
 import type { KheopskitConfig, Wallet } from "./types";
 
@@ -22,13 +23,13 @@ const autoReconnectWalletIds$ = store.observable.pipe(
   shareReplay(1),
 );
 
-export const getWallets$ = (config: KheopskitConfig) => {
+export const getWallets$ = (config: KheopskitConfig, appKit: AppKit | null) => {
   return new Observable<Wallet[]>((subscriber) => {
     const observables = config.platforms.map<Observable<Wallet[]>>(
       (platform) => {
         switch (platform) {
           case "polkadot":
-            return polkadotWallets$;
+            return getPolkadotWallets$(appKit);
           case "ethereum":
             return ethereumWallets$;
         }

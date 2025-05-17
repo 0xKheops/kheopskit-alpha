@@ -29,6 +29,8 @@ export const KheopskitProvider: FC<
 
   const value = useMemo(() => ({ state }), [state]);
 
+  //  console.log("[kheopskit] config", config);
+
   return (
     <KheopskitContext.Provider value={value}>
       {children}
