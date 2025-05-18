@@ -10,7 +10,7 @@ import {
   shareReplay,
   take,
 } from "rxjs";
-import { ethereumWallets$ } from "./ethereum/wallets";
+import { getEthereumWallets$ } from "./ethereum/wallets";
 import { getPolkadotWallets$ } from "./polkadot/wallets";
 import { store } from "./store";
 import type { KheopskitConfig, Wallet } from "./types";
@@ -30,7 +30,7 @@ export const getWallets$ = (config: KheopskitConfig) => {
           case "polkadot":
             return getPolkadotWallets$(config);
           case "ethereum":
-            return ethereumWallets$;
+            return getEthereumWallets$(config);
         }
       },
     );

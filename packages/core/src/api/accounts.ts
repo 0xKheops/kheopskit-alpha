@@ -1,6 +1,6 @@
 import { sortAccounts } from "@/utils/sortAccounts";
 import { Observable, combineLatest, map, of, shareReplay } from "rxjs";
-import { ethereumAccounts$ } from "./ethereum/accounts";
+import { getEthereumAccounts$ } from "./ethereum/accounts";
 import { getPolkadotAccounts$ } from "./polkadot/accounts";
 import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
 
@@ -19,7 +19,11 @@ export const getAccounts$ = (
               ),
             );
           case "ethereum":
-            return ethereumAccounts$;
+            return getEthereumAccounts$(
+              wallets.pipe(
+                map((w) => w.filter((w) => w.platform === "ethereum")),
+              ),
+            );
         }
       },
     );

@@ -9,43 +9,19 @@ import {
   of,
   shareReplay,
 } from "rxjs";
-import type { KheopskitConfig, PolkadotAppKitWallet } from "./types";
-
-// const CACHE = new Map<string, AppKit>();
-
-// export const getAppKit = (config: KheopskitConfig): AppKit | null => {
-//   if (!config.walletConnect?.projectId) return null;
-
-//   const key = JSON.stringify(config.walletConnect);
-//   if (!CACHE.has(key)) {
-//     CACHE.set(
-//       key,
-//       createAppKit({
-//         projectId: config.walletConnect.projectId,
-//         metadata: config.walletConnect.metadata,
-//         networks: config.walletConnect.networks,
-//         universalProviderConfigOverride: {
-//           methods: {
-//             polkadot: ["polkadot_signTransaction", "polkadot_signMessage"],
-//           },
-//         },
-//       }),
-//     );
-//   }
-
-//   // biome-ignore lint/style/noNonNullAssertion: <explanation>
-//   return CACHE.get(key)!;
-// };
+import type {
+  EthereumAppKitWallet,
+  KheopskitConfig,
+  PolkadotAppKitWallet,
+} from "./types";
 
 type AppKitWallets = {
   polkadot?: PolkadotAppKitWallet;
-  //ethereum?: EthereumAppKitWallet;
+  ethereum?: EthereumAppKitWallet;
 };
 
 // once it exists, appKit object should never be recreated
 let cachedAppKit: Observable<AppKitWallets> | null = null;
-
-// const OBS_CACHE = new Map<string, Observable<AppKit | null>>();
 
 export const getAppKitWallets$ = (
   config: KheopskitConfig,
@@ -72,11 +48,6 @@ export const getAppKitWallets$ = (
         isEthereumConnected: false,
       });
 
-      // const polkadotWallet = new BehaviorSubject<PolkadotAppKitWallet | null>(
-      //   null,
-      // );
-
-      console.log("[AppKit] Subscribe providers");
       const unsubProviders = appKit.subscribeProviders((providers) => {
         status$.next({
           isPolkadotConnected: !!providers.polkadot,
@@ -110,27 +81,31 @@ export const getAppKitWallets$ = (
           )
         : of(undefined);
 
-      // const ethereumWallet$ = status$
-      // .pipe(
-      //   map((s) => s.isEthereumConnected),
-      //   distinctUntilChanged(),
-      //   map(
-      //     (isConnected): EthereumAppKitWallet => ({
-      //       id: getWalletAccountId("eip155", "walletconnect"),
-      //       platform: "ethereum",
-      //       type: "appKit",
-      //       appKit,
-      //       name: "WalletConnect",
-      //       connect: () => appKit.open(),
-      //       disconnect: () => appKit.disconnect(),
-      //       isConnected,
-      //     }),
-      //   ),
-      // );
+      const ethereumWallet$ = appKit.chainNamespaces.includes("eip155")
+        ? status$.pipe(
+            map((s) => s.isEthereumConnected),
+            distinctUntilChanged(),
+            map((isConnected): EthereumAppKitWallet => {
+              const walletInfo = appKit.getWalletInfo();
+
+              return {
+                id: getWalletId("ethereum", "walletconnect"),
+                platform: "ethereum",
+                type: "appKit",
+                appKit,
+                icon: walletInfo?.icon ?? "",
+                name: "WalletConnect",
+                connect: () => appKit.open(),
+                disconnect: () => appKit.disconnect(),
+                isConnected,
+              };
+            }),
+          )
+        : of(undefined);
 
       const sub = combineLatest({
         polkadot: polkadotWallet$,
-        // ethereum: ethereumWallet$,
+        ethereum: ethereumWallet$,
       }).subscribe(subscriber);
 
       return () => {

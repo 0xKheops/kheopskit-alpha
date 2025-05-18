@@ -51,8 +51,9 @@ export type PolkadotAppKitWallet = {
 
 export type PolkadotWallet = PolkadotInjectedWallet | PolkadotAppKitWallet;
 
-export type EthereumWallet = {
+export type EthereumInjectedWallet = {
   platform: "ethereum";
+  type: "injected";
   id: WalletId;
   providerId: string;
   provider: EIP1193Provider;
@@ -62,6 +63,20 @@ export type EthereumWallet = {
   connect: () => Promise<void>;
   disconnect: () => void;
 };
+
+export type EthereumAppKitWallet = {
+  platform: "ethereum";
+  type: "appKit";
+  id: WalletId;
+  appKit: AppKit;
+  name: string;
+  icon: string;
+  isConnected: boolean;
+  connect: () => Promise<void>;
+  disconnect: () => void;
+};
+
+export type EthereumWallet = EthereumInjectedWallet | EthereumAppKitWallet;
 
 export type Wallet = PolkadotWallet | EthereumWallet;
 

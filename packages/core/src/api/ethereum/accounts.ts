@@ -1,4 +1,8 @@
-import type { EthereumAccount, EthereumWallet } from "@/api/types";
+import type {
+  EthereumAccount,
+  EthereumInjectedWallet,
+  EthereumWallet,
+} from "@/api/types";
 import { getWalletAccountId } from "@/utils";
 import { logObservable } from "@/utils/logObservable";
 import {
@@ -11,10 +15,9 @@ import {
   switchMap,
 } from "rxjs";
 import { type EIP1193Provider, getAddress } from "viem";
-import { ethereumWallets$ } from "./wallets";
 
-const getWalletAccounts$ = (
-  wallet: EthereumWallet,
+const getInjectedWalletAccounts$ = (
+  wallet: EthereumInjectedWallet,
 ): Observable<EthereumAccount[]> => {
   if (!wallet.isConnected) return of([]);
 
@@ -53,14 +56,52 @@ const getWalletAccounts$ = (
   });
 };
 
-export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
-  (subscriber) => {
-    const sub = ethereumWallets$
+// export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
+//   (subscriber) => {
+//     const sub = ethereumInjectedWallets$
+//       .pipe(
+//         map((wallets) => wallets.filter((w) => w.isConnected)),
+//         switchMap((wallets) =>
+//           wallets.length
+//             ? combineLatest(
+//                 wallets
+//                   .filter((w) => w.type === "injected")
+//                   .map(getWalletAccounts$),
+//               )
+//             : of([]),
+//         ),
+//         map((accounts) => accounts.flat()),
+//         distinctUntilChanged(isSameAccountsList),
+//       )
+//       .subscribe(subscriber);
+
+//     return () => {
+//       sub.unsubscribe();
+//     };
+//   },
+// ).pipe(
+//   logObservable("ethereumAccounts$"),
+//   shareReplay({ refCount: true, bufferSize: 1 }),
+// );
+
+export const getEthereumAccounts$ = (
+  polkadotWallets$: Observable<EthereumWallet[]>,
+) =>
+  new Observable<EthereumAccount[]>((subscriber) => {
+    const sub = polkadotWallets$
       .pipe(
         map((wallets) => wallets.filter((w) => w.isConnected)),
         switchMap((wallets) =>
           wallets.length
-            ? combineLatest(wallets.map(getWalletAccounts$))
+            ? combineLatest([
+                ...wallets
+                  .filter((w) => w.type === "injected")
+                  .map(getInjectedWalletAccounts$),
+                // ...wallets
+                //   .filter((w) => w.type === "appKit")
+                //   .map(getAppKitAccounts$),
+                // todo appkit
+              ])
             : of([]),
         ),
         map((accounts) => accounts.flat()),
@@ -71,11 +112,10 @@ export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
     return () => {
       sub.unsubscribe();
     };
-  },
-).pipe(
-  logObservable("ethereumAccounts$"),
-  shareReplay({ refCount: true, bufferSize: 1 }),
-);
+  }).pipe(
+    logObservable("polkadotAccounts$", true),
+    shareReplay({ refCount: true, bufferSize: 1 }),
+  );
 
 const isSameAccountsList = (a: EthereumAccount[], b: EthereumAccount[]) => {
   if (a.length !== b.length) return false;

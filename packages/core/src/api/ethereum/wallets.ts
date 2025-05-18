@@ -1,5 +1,9 @@
 import { store } from "@/api/store";
-import type { EthereumWallet } from "@/api/types";
+import type {
+  EthereumInjectedWallet,
+  EthereumWallet,
+  KheopskitConfig,
+} from "@/api/types";
 import { type WalletId, getWalletId } from "@/utils/WalletId";
 import { logObservable } from "@/utils/logObservable";
 import { type EIP6963ProviderDetail, createStore } from "mipd";
@@ -11,6 +15,7 @@ import {
   shareReplay,
 } from "rxjs";
 import type { EIP1193Provider } from "viem";
+import { getAppKitWallets$ } from "../appKit";
 
 const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
   (subscriber) => {
@@ -34,7 +39,7 @@ const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
-export const ethereumWallets$ = new Observable<EthereumWallet[]>(
+const ethereumInjectedWallets$ = new Observable<EthereumInjectedWallet[]>(
   (subscriber) => {
     const enabledWalletIds$ = new BehaviorSubject<Set<WalletId>>(new Set());
 
@@ -72,12 +77,13 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
     const sub = combineLatest([providersDetails$, enabledWalletIds$])
       .pipe(
         map(([providerDetails, enabledWalletIds]) => {
-          return providerDetails.map((pd): EthereumWallet => {
+          return providerDetails.map((pd): EthereumInjectedWallet => {
             const walletId = getWalletId("ethereum", pd.info.rdns);
             const provider = pd.provider as EIP1193Provider;
 
             return {
               platform: "ethereum",
+              type: "injected",
               id: walletId,
               name: pd.info.name,
               icon: pd.info.icon,
@@ -100,3 +106,25 @@ export const ethereumWallets$ = new Observable<EthereumWallet[]>(
   logObservable("ethereumWallets$"),
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
+
+export const getEthereumWallets$ = (config: KheopskitConfig) => {
+  return new Observable<EthereumWallet[]>((subscriber) => {
+    const subscription = combineLatest([
+      ethereumInjectedWallets$,
+      getAppKitWallets$(config)?.pipe(map((w) => w.ethereum)),
+    ])
+      .pipe(
+        map(([injectedWallets, appKitWallet]) =>
+          appKitWallet ? [...injectedWallets, appKitWallet] : injectedWallets,
+        ),
+      )
+      .subscribe(subscriber);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }).pipe(
+    logObservable("getEthereumWallets$"),
+    shareReplay({ refCount: true, bufferSize: 1 }),
+  );
+};
