@@ -7,7 +7,7 @@ import type {
   InjectedExtension,
   InjectedPolkadotAccount,
 } from "polkadot-api/pjs-signer";
-import type { EIP1193Provider } from "viem";
+import type { EIP1193Provider, WalletClient } from "viem";
 
 export type KheopskitConfig = {
   autoReconnect: boolean;
@@ -92,7 +92,7 @@ export type PolkadotAccount = InjectedPolkadotAccount & {
 export type EthereumAccount = {
   id: WalletAccountId;
   platform: "ethereum";
-  provider: EIP1193Provider;
+  client: WalletClient;
   address: `0x${string}`;
   walletName: string;
   walletId: string;

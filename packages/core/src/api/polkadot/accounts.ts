@@ -83,7 +83,7 @@ const getAppKitPolkadotSigner = (appKit: AppKit, address: string) => {
 
       return provider.client.request({
         topic: provider.session.topic,
-        chainId, // `polkadot:${provider.session.namespaces.polkadot.chains[0]}`,
+        chainId,
         request: {
           method: "polkadot_signMessage",
           params: {
@@ -101,7 +101,7 @@ const getAppKitAccounts$ = (wallet: PolkadotAppKitWallet) => {
   const provider = wallet.appKit.getProvider<UniversalProvider>("polkadot");
 
   const walletInfo = wallet.appKit.getWalletInfo();
-  console.log("WalletInfo", { walletInfo, account });
+  console.log("Polkadot WalletInfo", { walletInfo, account, provider });
 
   if (
     !wallet.isConnected ||

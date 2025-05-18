@@ -10,7 +10,7 @@ import { useLocalStorageConfig } from "@/lib/config/configStore";
 import { useWallets } from "@kheopskit/react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useAccount, useConnect, useConnections, useSignMessage } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { AppBlock } from "./AppBlock";
 
 export const Wagmi = () => {
@@ -79,10 +79,7 @@ const Connectors = () => {
 };
 
 const ActiveAccount = () => {
-  const { accounts, wallets } = useWallets(); // kheopskit
-  const connections = useConnections(); // wagmi
-  const { signMessageAsync } = useSignMessage();
-
+  const { accounts } = useWallets(); // kheopskit
   const [accountId, setAccountId] = useState<string>();
 
   const account = useMemo(
@@ -94,26 +91,15 @@ const ActiveAccount = () => {
     const account = accounts.find((a) => a.id === accountId);
     if (!account || account.platform !== "ethereum") return;
 
-    const wallet = wallets.find((w) => w.id === account.walletId);
-    if (!wallet || wallet.platform !== "ethereum") return;
-
-    const connection = connections.find(
-      (c) =>
-        c.connector.id === wallet.providerId &&
-        c.accounts.some(
-          (a) => a.toLowerCase() === account.address.toLowerCase(),
-        ),
-    );
-    if (!connection) return;
-
     try {
-      const signature = await signMessageAsync({
+      const signature = await account.client.signMessage({
         message: "Hello Wagmi!",
         account: account.address,
-        connector: connection.connector,
       });
+
       toast.success(`Signature: ${signature}`);
     } catch (err) {
+      console.error(err);
       toast.error(`Error: ${(err as Error).message}`);
     }
   };

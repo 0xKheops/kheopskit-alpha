@@ -94,7 +94,7 @@ export const getAppKitWallets$ = (
                 type: "appKit",
                 appKit,
                 icon: walletInfo?.icon ?? "",
-                name: "WalletConnect",
+                name: walletInfo?.name ?? "WalletConnect",
                 connect: () => appKit.open(),
                 disconnect: () => appKit.disconnect(),
                 isConnected,

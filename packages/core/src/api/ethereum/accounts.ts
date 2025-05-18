@@ -1,10 +1,12 @@
 import type {
   EthereumAccount,
+  EthereumAppKitWallet,
   EthereumInjectedWallet,
   EthereumWallet,
 } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
 import { logObservable } from "@/utils/logObservable";
+import type UniversalProvider from "@walletconnect/universal-provider";
 import {
   Observable,
   combineLatest,
@@ -14,7 +16,12 @@ import {
   shareReplay,
   switchMap,
 } from "rxjs";
-import { type EIP1193Provider, getAddress } from "viem";
+import {
+  type EIP1193Provider,
+  createWalletClient,
+  custom,
+  getAddress,
+} from "viem";
 
 const getInjectedWalletAccounts$ = (
   wallet: EthereumInjectedWallet,
@@ -22,15 +29,21 @@ const getInjectedWalletAccounts$ = (
   if (!wallet.isConnected) return of([]);
 
   return new Observable<EthereumAccount[]>((subscriber) => {
-    const getAccount = (address: string, i: number): EthereumAccount => ({
-      id: getWalletAccountId(wallet.id, address),
-      platform: "ethereum",
-      provider: wallet.provider as EIP1193Provider,
-      address: getAddress(address),
-      walletName: wallet.name,
-      walletId: wallet.id,
-      isWalletDefault: i === 0,
-    });
+    const getAccount = (address: string, i: number): EthereumAccount => {
+      const client = createWalletClient({
+        transport: custom(wallet.provider as EIP1193Provider),
+      });
+
+      return {
+        id: getWalletAccountId(wallet.id, address),
+        platform: "ethereum",
+        client,
+        address: getAddress(address),
+        walletName: wallet.name,
+        walletId: wallet.id,
+        isWalletDefault: i === 0,
+      };
+    };
 
     const listener = (addresses: string[]) => {
       subscriber.next(addresses.map(getAccount));
@@ -56,54 +69,69 @@ const getInjectedWalletAccounts$ = (
   });
 };
 
-// export const ethereumAccounts$ = new Observable<EthereumAccount[]>(
-//   (subscriber) => {
-//     const sub = ethereumInjectedWallets$
-//       .pipe(
-//         map((wallets) => wallets.filter((w) => w.isConnected)),
-//         switchMap((wallets) =>
-//           wallets.length
-//             ? combineLatest(
-//                 wallets
-//                   .filter((w) => w.type === "injected")
-//                   .map(getWalletAccounts$),
-//               )
-//             : of([]),
-//         ),
-//         map((accounts) => accounts.flat()),
-//         distinctUntilChanged(isSameAccountsList),
-//       )
-//       .subscribe(subscriber);
+const getAppKitAccounts$ = (
+  wallet: EthereumAppKitWallet,
+): Observable<EthereumAccount[]> => {
+  const account = wallet.appKit.getAccount("eip155");
+  const provider = wallet.appKit.getProvider<UniversalProvider>("eip155");
 
-//     return () => {
-//       sub.unsubscribe();
-//     };
-//   },
-// ).pipe(
-//   logObservable("ethereumAccounts$"),
-//   shareReplay({ refCount: true, bufferSize: 1 }),
-// );
+  const walletInfo = wallet.appKit.getWalletInfo();
+  console.log("Ethereum WalletInfo", { walletInfo, account, provider });
+
+  if (
+    !wallet.isConnected ||
+    !wallet.appKit ||
+    !account?.allAccounts.length ||
+    !provider?.session
+  )
+    return of([]);
+
+  return new Observable<EthereumAccount[]>((subscriber) => {
+    subscriber.next(
+      account.allAccounts.map((acc, i): EthereumAccount => {
+        const client = createWalletClient({
+          transport: custom(provider.client as EIP1193Provider),
+        });
+
+        return {
+          id: getWalletAccountId(wallet.id, acc.address),
+          platform: "ethereum",
+          walletName: wallet.name,
+          walletId: wallet.id,
+          address: acc.address as `0x${string}`,
+          client,
+          isWalletDefault: i === 0,
+        };
+      }),
+    );
+
+    return () => {
+      // unsubscribe();
+    };
+  });
+};
 
 export const getEthereumAccounts$ = (
-  polkadotWallets$: Observable<EthereumWallet[]>,
+  ethereumWallets: Observable<EthereumWallet[]>,
 ) =>
   new Observable<EthereumAccount[]>((subscriber) => {
-    const sub = polkadotWallets$
+    const sub = ethereumWallets
       .pipe(
         map((wallets) => wallets.filter((w) => w.isConnected)),
-        switchMap((wallets) =>
-          wallets.length
+        switchMap((wallets) => {
+          console.log("Ethereum wallets", wallets);
+          return wallets.length
             ? combineLatest([
                 ...wallets
                   .filter((w) => w.type === "injected")
                   .map(getInjectedWalletAccounts$),
-                // ...wallets
-                //   .filter((w) => w.type === "appKit")
-                //   .map(getAppKitAccounts$),
+                ...wallets
+                  .filter((w) => w.type === "appKit")
+                  .map(getAppKitAccounts$),
                 // todo appkit
               ])
-            : of([]),
-        ),
+            : of([]);
+        }),
         map((accounts) => accounts.flat()),
         distinctUntilChanged(isSameAccountsList),
       )

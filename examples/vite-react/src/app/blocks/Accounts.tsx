@@ -71,7 +71,7 @@ const SignButton: FC<{ account: WalletAccount }> = ({ account }) => {
   const handleClick = useCallback(async () => {
     switch (account.platform) {
       case "polkadot": {
-        const bytes = Binary.fromText(`${MESSAGE}`).asBytes();
+        const bytes = Binary.fromText(MESSAGE).asBytes();
         try {
           const signature = await account.polkadotSigner.signBytes(bytes);
           const hexSignature = Binary.fromBytes(signature).asHex();
@@ -84,10 +84,9 @@ const SignButton: FC<{ account: WalletAccount }> = ({ account }) => {
 
       case "ethereum": {
         try {
-          const message = Binary.fromText(MESSAGE).asHex() as `0x${string}`;
-          const signature = await account.provider.request({
-            method: "personal_sign",
-            params: [message, account.address],
+          const signature = await account.client.signMessage({
+            message: MESSAGE,
+            account: account.address,
           });
           toast.success(`Signature: ${signature}`);
         } catch (err) {
