@@ -14,6 +14,11 @@ export const getAppKit = (config: KheopskitConfig): AppKit | null => {
         projectId: config.walletConnect.projectId,
         metadata: config.walletConnect.metadata,
         networks: config.walletConnect.networks,
+        universalProviderConfigOverride: {
+          methods: {
+            polkadot: ["polkadot_signTransaction", "polkadot_signMessage"],
+          },
+        },
       }),
     );
   }

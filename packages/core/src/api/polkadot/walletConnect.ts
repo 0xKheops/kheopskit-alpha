@@ -41,10 +41,10 @@ export const getPolkadotAppKitWallet$ = (appKit: AppKit | null) => {
       if (isConnected$.value !== isConnected) isConnected$.next(isConnected);
     });
 
-    appKit.subscribeAccount((account) => {
-      if (isConnected$.value !== account.isConnected)
-        isConnected$.next(account.isConnected);
-    }, "polkadot");
+    // appKit.subscribeAccount((account) => {
+    //   if (isConnected$.value !== account.isConnected)
+    //     isConnected$.next(account.isConnected);
+    // }, "polkadot");
 
     isConnected$
       .pipe(
