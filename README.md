@@ -40,7 +40,7 @@ import React from "react";
 import { KheopskitProvider, useWallets } from "@Kheopskit/react";
 
 const App = () => {
-  const { wallets, accounts, connect, disconnect } = useWallets();
+  const { wallets, accounts } = useWallets();
 
   return (
     <div>
