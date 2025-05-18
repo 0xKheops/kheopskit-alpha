@@ -1,8 +1,11 @@
 import { store } from "@/api/store";
-import type { PolkadotInjectedWallet, PolkadotWallet } from "@/api/types";
+import type {
+  KheopskitConfig,
+  PolkadotInjectedWallet,
+  PolkadotWallet,
+} from "@/api/types";
 import { type WalletId, getWalletId, parseWalletId } from "@/utils/WalletId";
 import { logObservable } from "@/utils/logObservable";
-import type { AppKit } from "@reown/appkit/core";
 import { isEqual } from "lodash";
 import {
   type InjectedExtension,
@@ -20,7 +23,7 @@ import {
   shareReplay,
   timer,
 } from "rxjs";
-import { getPolkadotAppKitWallet$ } from "./walletConnect";
+import { getAppKitWallets$ } from "../appKit";
 
 const getInjectedWalletsIds = () =>
   getInjectedExtensions().map((name) => getWalletId("polkadot", name));
@@ -95,14 +98,11 @@ export const polkadotInjectedWallets$ = new Observable<
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
-export const getPolkadotWallets$ = (
-  // config: KheopskitConfig,
-  appKit: AppKit | null,
-) => {
+export const getPolkadotWallets$ = (config: KheopskitConfig) => {
   return new Observable<PolkadotWallet[]>((subscriber) => {
     const subscription = combineLatest([
       polkadotInjectedWallets$,
-      getPolkadotAppKitWallet$(appKit),
+      getAppKitWallets$(config)?.pipe(map((w) => w.polkadot)),
     ])
       .pipe(
         map(([injectedWallets, appKitWallet]) =>

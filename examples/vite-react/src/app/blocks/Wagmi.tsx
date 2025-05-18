@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLocalStorageConfig } from "@/lib/config/configStore";
 import { useWallets } from "@kheopskit/react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +14,10 @@ import { useAccount, useConnect, useConnections, useSignMessage } from "wagmi";
 import { AppBlock } from "./AppBlock";
 
 export const Wagmi = () => {
+  const { config } = useLocalStorageConfig();
+
+  if (!config.platforms?.includes("ethereum")) return null;
+
   return (
     <AppBlock
       title="Usage with Wagmi"

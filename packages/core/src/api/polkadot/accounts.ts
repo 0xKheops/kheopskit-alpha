@@ -53,16 +53,10 @@ const getInjectedWalletAccounts$ = (
   });
 };
 
-const getPolkadotSigner = (appKit: AppKit, address: string) => {
+const getAppKitPolkadotSigner = (appKit: AppKit, address: string) => {
   const provider = appKit.getProvider<UniversalProvider>("polkadot");
   if (!provider) throw new Error("No provider found");
   if (!provider.session) throw new Error("No session found");
-
-  // console.log("session", provider.session);
-
-  // const networks = appKit.getCaipNetworks("polkadot");
-  // const chainId = networks[0]?.caipNetworkId;
-  // console.log("networks", networks);
 
   return getPolkadotSignerFromPjs(
     address,
@@ -104,34 +98,33 @@ const getPolkadotSigner = (appKit: AppKit, address: string) => {
 
 const getAppKitAccounts$ = (wallet: PolkadotAppKitWallet) => {
   const account = wallet.appKit.getAccount("polkadot");
+  const provider = wallet.appKit.getProvider<UniversalProvider>("polkadot");
 
-  if (!account?.address || !wallet.isConnected || !wallet.appKit) return of([]);
+  const walletInfo = wallet.appKit.getWalletInfo();
+  console.log("WalletInfo", { walletInfo, account });
+
+  if (
+    !wallet.isConnected ||
+    !wallet.appKit ||
+    !account?.allAccounts.length ||
+    !provider?.session
+  )
+    return of([]);
 
   return new Observable<PolkadotAccount[]>((subscriber) => {
-    // TODO check impact of not being able to unsubscribe
-    // const accounts$ = new BehaviorSubject<PolkadotAccount[]>([]);
-
-    const address = account.address as string;
-
-    const providerType = wallet.appKit.getProviderType("polkadot");
-    console.log("Provider type", { providerType });
-
-    const provider = wallet.appKit.getProvider<UniversalProvider>("polkadot");
-    console.log("Provider", { provider });
-
-    subscriber.next([
-      {
-        id: getWalletAccountId(wallet.id, address as string),
+    subscriber.next(
+      account.allAccounts.map((acc) => ({
+        id: getWalletAccountId(wallet.id, acc.address),
         platform: "polkadot",
-        walletName: "AppKit",
-        walletId: "appkit",
-        address,
-        polkadotSigner: getPolkadotSigner(wallet.appKit, address),
+        walletName: wallet.name,
+        walletId: wallet.id,
+        address: acc.address,
+        polkadotSigner: getAppKitPolkadotSigner(wallet.appKit, acc.address),
         genesisHash: null,
-        name: "AppKit Polkadot",
+        name: `${wallet.name} Polkadot`,
         type: "sr25519",
-      },
-    ]);
+      })),
+    );
 
     return () => {
       // unsubscribe();
