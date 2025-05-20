@@ -8,6 +8,7 @@ import { Github } from "lucide-react";
 import { WagmiProvider } from "wagmi";
 import { Accounts } from "./blocks/Accounts";
 import { Config } from "./blocks/Config";
+import { SubmitTx } from "./blocks/SubmitTx";
 import { Wagmi } from "./blocks/Wagmi";
 import { Wallets } from "./blocks/Wallets";
 
@@ -42,6 +43,7 @@ const AppContent = () => (
     <Config />
     <Wallets />
     <Accounts />
+    <SubmitTx />
     <Wagmi />
     <Footer />
   </div>

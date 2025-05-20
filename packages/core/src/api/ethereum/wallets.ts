@@ -39,6 +39,52 @@ const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
+// const getInjectedWalletClient$ = (provider: EIP1193Provider) => {
+//   return new Observable<WalletClient>((subscriber) => {
+//     const client = createWalletClient({
+//       transport: custom(provider),
+//     });
+
+//     const connected$ = new BehaviorSubject<boolean>(false);
+//     const chainId$ = new BehaviorSubject<string | undefined>(undefined);
+//     const addresses$ = new BehaviorSubject<string[]>([]);
+
+//     const handleAccountsChanged = (addresses: string[]) => {
+//       console.log("injected accounts changed", addresses);
+//       addresses$.next(addresses);
+//     };
+//     const handleChainChanged = (chainId: string) => {
+//       console.log("injected chain changed", chainId);
+//       chainId$.next(chainId);
+//     };
+//     const handleDisconnect = (error: Error) => {
+//       console.log("injected wallet disconnect", error);
+//       connected$.next(false);
+//     };
+//     const handleConnect = (info: { chainId: string }) => {
+//       console.log("injected wallet connect", info);
+//       connected$.next(true);
+//       chainId$.next(info.chainId);
+//     };
+
+//     provider.on("chainChanged", handleChainChanged);
+//     provider.on("accountsChanged", handleAccountsChanged);
+//     provider.on("disconnect", handleDisconnect);
+//     provider.on("connect", handleConnect);
+
+//     combineLatest([connected$, chainId$, addresses$]).subscribe(() => {
+//       subscriber.next(client);
+//     });
+
+//     return () => {
+//       provider.removeListener("chainChanged", handleChainChanged);
+//       provider.removeListener("accountsChanged", handleAccountsChanged);
+//       provider.removeListener("disconnect", handleDisconnect);
+//       provider.removeListener("connect", handleConnect);
+//     };
+//   });
+// };
+
 const ethereumInjectedWallets$ = new Observable<EthereumInjectedWallet[]>(
   (subscriber) => {
     const enabledWalletIds$ = new BehaviorSubject<Set<WalletId>>(new Set());

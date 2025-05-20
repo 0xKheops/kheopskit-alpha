@@ -46,12 +46,12 @@ const getInjectedWalletAccounts$ = (
       };
     };
 
-    const listener = (addresses: string[]) => {
+    const handleAccountsChanged = (addresses: string[]) => {
       subscriber.next(addresses.map(getAccount));
     };
 
     // subscribe to changes
-    wallet.provider.on("accountsChanged", listener);
+    wallet.provider.on("accountsChanged", handleAccountsChanged);
 
     // initial value
     wallet.provider
@@ -65,7 +65,7 @@ const getInjectedWalletAccounts$ = (
       });
 
     return () => {
-      wallet.provider.removeListener("accountsChanged", listener);
+      wallet.provider.removeListener("accountsChanged", handleAccountsChanged);
     };
   });
 };

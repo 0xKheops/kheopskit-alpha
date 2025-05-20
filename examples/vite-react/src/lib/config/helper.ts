@@ -1,6 +1,12 @@
 import type { KheopskitConfig } from "@kheopskit/core";
 
-import { type AppKitNetwork, defineChain } from "@reown/appkit/networks";
+import type { AppKitNetwork } from "@reown/appkit/networks";
+import {
+  ethMainnet,
+  ethWestendAssetHub,
+  polkadot,
+  westendAssetHub,
+} from "./chains";
 
 export const ensureConfig = (
   config: Partial<KheopskitConfig>,
@@ -26,52 +32,12 @@ export const ensureConfig = (
 };
 
 const getNetworks = (platforms: KheopskitConfig["platforms"]) => {
-  const networks: AppKitNetwork[] = [];
+  const networks: AppKitNetwork[] = [
+    ...(platforms.includes("polkadot") ? [polkadot, westendAssetHub] : []),
+    ...(platforms.includes("ethereum") ? [ethMainnet, ethWestendAssetHub] : []),
+  ];
 
-  if (platforms.includes("polkadot")) {
-    networks.push(
-      defineChain({
-        id: "91b171bb158e2d3848fa23a9f1c25182",
-        name: "Polkadot",
-        nativeCurrency: { name: "Polkadot", symbol: "DOT", decimals: 10 },
-        rpcUrls: {
-          default: {
-            http: ["https://rpc.polkadot.io"],
-            wss: "wss://rpc.polkadot.io",
-          },
-        },
-        blockExplorers: {
-          default: {
-            name: "Polkadot Explorer",
-            url: "https://polkadot.js.org/apps/",
-          },
-        },
-        chainNamespace: "polkadot",
-        caipNetworkId: "polkadot:91b171bb158e2d3848fa23a9f1c25182",
-      }),
-    );
-  }
-
-  if (platforms.includes("ethereum")) {
-    networks.push(
-      defineChain({
-        id: "1",
-        name: "Ethereum",
-        nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
-        rpcUrls: {
-          default: {
-            http: ["https://rpc.ankr.com/eth"],
-            wss: "wss://rpc.ankr.com/eth",
-          },
-        },
-        blockExplorers: {
-          default: { name: "Etherscan", url: "https://etherscan.io/" },
-        },
-        chainNamespace: "eip155",
-        caipNetworkId: "eip155:1",
-      }),
-    );
-  }
-
-  return networks ? (networks as [AppKitNetwork, ...AppKitNetwork[]]) : null;
+  return networks.length
+    ? (networks as [AppKitNetwork, ...AppKitNetwork[]])
+    : null;
 };
