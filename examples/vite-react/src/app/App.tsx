@@ -15,9 +15,8 @@ import { Wallets } from "./blocks/Wallets";
 const queryClient = new QueryClient();
 
 export const App = () => {
-  // IMPORTANT Kheopskit config should be hardcoded in most apps
-  // This hook allows modifying the config live, to showcase capabilities of the library.
-  // It is only for demo purposes and should not be used in production.
+  // IMPORTANT config should be hardcoded
+  // This hook allows modifying the config live, but reloads the web page each time it changes.
   const { config } = useLocalStorageConfig();
 
   return (
