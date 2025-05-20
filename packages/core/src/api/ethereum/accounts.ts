@@ -22,6 +22,7 @@ import {
   custom,
   getAddress,
 } from "viem";
+import { mainnet } from "viem/chains";
 
 const getInjectedWalletAccounts$ = (
   wallet: EthereumInjectedWallet,
@@ -69,14 +70,31 @@ const getInjectedWalletAccounts$ = (
   });
 };
 
+const wrapWalletConnectProvider = (
+  provider: EIP1193Provider,
+  sessionTopic: string,
+  caipNetworkId: string,
+): EIP1193Provider => {
+  return new Proxy(provider, {
+    get(target, prop, receiver) {
+      if (prop !== "request") return Reflect.get(target, prop, receiver);
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      return (args: any) => {
+        if (args && typeof args === "object" && args.method) {
+          if (!args.topic) args.topic = sessionTopic;
+          if (!args.chainId) args.chainId = caipNetworkId;
+        }
+        return target.request(args);
+      };
+    },
+  });
+};
+
 const getAppKitAccounts$ = (
   wallet: EthereumAppKitWallet,
 ): Observable<EthereumAccount[]> => {
   const account = wallet.appKit.getAccount("eip155");
   const provider = wallet.appKit.getProvider<UniversalProvider>("eip155");
-
-  const walletInfo = wallet.appKit.getWalletInfo();
-  console.log("Ethereum WalletInfo", { walletInfo, account, provider });
 
   if (
     !wallet.isConnected ||
@@ -86,29 +104,31 @@ const getAppKitAccounts$ = (
   )
     return of([]);
 
-  return new Observable<EthereumAccount[]>((subscriber) => {
-    subscriber.next(
-      account.allAccounts.map((acc, i): EthereumAccount => {
-        const client = createWalletClient({
-          transport: custom(provider.client as EIP1193Provider),
-        });
+  const wrappedProvider = wrapWalletConnectProvider(
+    provider as EIP1193Provider,
+    provider.session.topic,
+    "eip155:1",
+  );
 
-        return {
-          id: getWalletAccountId(wallet.id, acc.address),
-          platform: "ethereum",
-          walletName: wallet.name,
-          walletId: wallet.id,
-          address: acc.address as `0x${string}`,
-          client,
-          isWalletDefault: i === 0,
-        };
-      }),
-    );
+  return of(
+    account.allAccounts.map((acc, i): EthereumAccount => {
+      const client = createWalletClient({
+        account: acc.address as `0x${string}`,
+        chain: mainnet,
+        transport: custom(wrappedProvider),
+      });
 
-    return () => {
-      // unsubscribe();
-    };
-  });
+      return {
+        id: getWalletAccountId(wallet.id, acc.address),
+        platform: "ethereum",
+        walletName: wallet.name,
+        walletId: wallet.id,
+        address: acc.address as `0x${string}`,
+        client,
+        isWalletDefault: i === 0,
+      };
+    }),
+  );
 };
 
 export const getEthereumAccounts$ = (

@@ -97,12 +97,5 @@ const SignButton: FC<{ account: WalletAccount }> = ({ account }) => {
     }
   }, [account]);
 
-  return (
-    <Button
-      //className="text-sm text-blue-500 hover:underline"
-      onClick={handleClick}
-    >
-      Sign
-    </Button>
-  );
+  return <Button onClick={handleClick}>Sign</Button>;
 };

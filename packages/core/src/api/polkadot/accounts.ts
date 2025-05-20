@@ -100,9 +100,6 @@ const getAppKitAccounts$ = (wallet: PolkadotAppKitWallet) => {
   const account = wallet.appKit.getAccount("polkadot");
   const provider = wallet.appKit.getProvider<UniversalProvider>("polkadot");
 
-  const walletInfo = wallet.appKit.getWalletInfo();
-  console.log("Polkadot WalletInfo", { walletInfo, account, provider });
-
   if (
     !wallet.isConnected ||
     !wallet.appKit ||
@@ -111,9 +108,9 @@ const getAppKitAccounts$ = (wallet: PolkadotAppKitWallet) => {
   )
     return of([]);
 
-  return new Observable<PolkadotAccount[]>((subscriber) => {
-    subscriber.next(
-      account.allAccounts.map((acc) => ({
+  return of(
+    account.allAccounts.map(
+      (acc): PolkadotAccount => ({
         id: getWalletAccountId(wallet.id, acc.address),
         platform: "polkadot",
         walletName: wallet.name,
@@ -123,13 +120,9 @@ const getAppKitAccounts$ = (wallet: PolkadotAppKitWallet) => {
         genesisHash: null,
         name: `${wallet.name} Polkadot`,
         type: "sr25519",
-      })),
-    );
-
-    return () => {
-      // unsubscribe();
-    };
-  });
+      }),
+    ),
+  );
 };
 
 export const getPolkadotAccounts$ = (
