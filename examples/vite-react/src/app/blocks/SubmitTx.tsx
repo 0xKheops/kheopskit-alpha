@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -5,15 +6,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SUPPORTED_CHAINS, VIEM_CHAINS_BY_ID } from "@/lib/config/chains";
-import type {
-  EthereumAccount,
-  EthereumWallet,
-  PolkadotAccount,
-} from "@kheopskit/core";
+import { APPKIT_CHAINS, VIEM_CHAINS_BY_ID } from "@/lib/config/chains";
+import {
+  type PolkadotChainId,
+  getPolkadotApi,
+} from "@/lib/config/getPolkadotApi";
+import type { EthereumAccount, PolkadotAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
+import { MultiAddress } from "@polkadot-api/descriptors";
+import type { TxEvent } from "polkadot-api";
 import { type FC, useEffect, useMemo, useState } from "react";
-import type { Chain } from "viem";
+import type { Observable } from "rxjs";
+import { toast } from "sonner";
+import { http, type RpcError, createPublicClient } from "viem";
 import { AppBlock } from "./AppBlock";
 
 export const SubmitTx = () => (
@@ -40,7 +45,7 @@ const Content = () => {
 
   const networks = useMemo(() => {
     if (!account) return [];
-    return SUPPORTED_CHAINS.filter((chain) => {
+    return APPKIT_CHAINS.filter((chain) => {
       switch (account.platform) {
         case "ethereum":
           return chain.chainNamespace === "eip155";
@@ -66,10 +71,10 @@ const Content = () => {
   console.log("tx", { account, network });
 
   return (
-    <div>
-      <div className="inline-grid grid-cols-[auto_auto] gap-4 items-center">
+    <div className="flex flex-col gap-4">
+      <div className="inline-grid grid-cols-[100px_auto] gap-4 items-center">
         <div>Account</div>
-        <div className="min-w-[300px]">
+        <div>
           <Select onValueChange={setAccountId} value={account?.id ?? ""}>
             <SelectTrigger>
               <SelectValue placeholder="Account" />
@@ -100,64 +105,88 @@ const Content = () => {
             </SelectContent>
           </Select>
         </div>
+
+        {!!network && account?.platform === "ethereum" && (
+          <SubmitEthxTx chainId={Number(network.id)} account={account} />
+        )}
+
+        {!!network && account?.platform === "polkadot" && (
+          <SubmitTxDot chainId={network.id} account={account} />
+        )}
       </div>
-
-      {!!network && account?.platform === "ethereum" && (
-        <SubmitEthxTx chainId={network.id} account={account} />
-      )}
-
-      {!!network && account?.platform === "polkadot" && (
-        <SubmitTxDot chainId={network.id} account={account} />
-      )}
     </div>
   );
 };
 
-const SubmitEthxTx: FC<{ chainId: string; account: EthereumAccount }> = ({
+const SubmitEthxTx: FC<{ chainId: number; account: EthereumAccount }> = ({
   chainId,
   account,
 }) => {
-  const { wallets } = useWallets();
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const chain = VIEM_CHAINS_BY_ID[chainId] as any;
 
-  const wallet = useMemo(() => {
-    return wallets.find(
-      (w) => w.id === account.walletId,
-    ) as EthereumWallet | null;
-  }, [account.walletId, wallets]);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
-  const activeChain = useMemo<Chain | null>(() => {
-    if (!account.client.chain) return null;
-    return VIEM_CHAINS_BY_ID[account.client.chain.id] ?? null;
-  }, [account.client.chain]);
-  // const {switchChainAsync} = useSwitchChain({
+  const handleSendClick = async () => {
+    if (!account) return;
 
-  // })
+    try {
+      const walletChainId = await account.client.getChainId();
+      console.log("walletChainId", walletChainId);
+      if (walletChainId !== chainId) {
+        try {
+          await account.client.switchChain({
+            id: chainId,
+          });
+        } catch (err) {
+          console.error("Error switching chain", err);
+          await account.client.addChain({
+            chain,
+          });
+        }
+      }
 
-  // account.client.chain?.id
+      const hash = await account.client.sendTransaction({
+        chain,
+        to: account.address,
+        value: 0n,
+      });
+      setTxHash(hash);
 
-  // const handleClick = async () => {
-  //   if (!client) return;
-  //   try {
-  //     const tx = await client.sendTransaction({
-  //       to: address,
-  //       value: "0",
-  //       chainId,
-  //     });
-  //     console.log("tx", tx);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+      toast.success(`Transaction submitted: ${hash}`);
+
+      const publicClient = createPublicClient({ chain, transport: http() });
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+      if (receipt.status === "success") toast.success("Transaction successful");
+      else toast.error("Transaction reverted");
+    } catch (err) {
+      toast.error(
+        `Error: ${(err as RpcError).shortMessage ?? (err as Error).message}`,
+      );
+    }
+  };
+
+  const blockExplorerUrl = useMemo(() => {
+    if (!chain || !txHash) return null;
+    const blockExplorer = chain.blockExplorers?.default;
+    if (!blockExplorer) return null;
+    return `${blockExplorer.url}/tx/${txHash}`;
+  }, [chain, txHash]);
 
   return (
-    <div>
-      <div>Target chain: {chainId}</div>
-      <div>Wallet active chain: {activeChain?.name ?? "unknown"}</div>
-      <div>Account client chain: {account.client.chain?.id ?? "undefined"}</div>
-      <div>Wallet is connected: {wallet?.isConnected}</div>
-
-      {/* <button onClick={handleClick}>Send</button> */}
-    </div>
+    <>
+      <div>
+        <Button disabled={!account || !chain} onClick={handleSendClick}>
+          Send
+        </Button>
+      </div>
+      <div>
+        {!!blockExplorerUrl && (
+          <a href={blockExplorerUrl}>View on block explorer</a>
+        )}
+      </div>
+    </>
   );
 };
 
@@ -165,14 +194,95 @@ const SubmitTxDot: FC<{ chainId: string; account: PolkadotAccount }> = ({
   chainId,
   account,
 }) => {
+  const [tx, setTx] = useState<Observable<TxEvent>>();
+  const [txStatus, setTxStatus] = useState<TxEvent | null>(null);
+
+  useEffect(() => {
+    if (!tx) return;
+
+    const sub = tx.subscribe((status) => {
+      setTxStatus(status);
+
+      const id = status.txHash; // for toasts
+
+      switch (status.type) {
+        case "signed": {
+          toast.loading(`Transaction signed: ${status.txHash}`, {
+            id,
+          });
+          break;
+        }
+        case "broadcasted": {
+          toast.loading(`Transaction broadcasted: ${status.txHash}`, {
+            id,
+          });
+          break;
+        }
+        case "txBestBlocksState": {
+          if (status.found) {
+            if (status.ok) {
+              toast.success("Transaction successful", {
+                id,
+              });
+            } else {
+              toast.error("Transaction failed", {
+                id,
+              });
+            }
+            setTx(undefined);
+          }
+          break;
+        }
+      }
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [tx]);
+
+  const handleSendClick = () => {
+    if (!account) return;
+
+    try {
+      const api = getPolkadotApi(chainId as PolkadotChainId);
+
+      const tx$ = api.tx.Balances.transfer_keep_alive({
+        dest: MultiAddress.Id(account.address),
+        value: 0n,
+      }).signSubmitAndWatch(account.polkadotSigner);
+
+      setTx(tx$);
+    } catch (err) {
+      toast.error(
+        `Error: ${(err as RpcError).shortMessage ?? (err as Error).message}`,
+      );
+    }
+  };
+
+  const blockExplorerUrl = useMemo(() => {
+    if (!txStatus?.txHash) return null;
+    const chain = APPKIT_CHAINS.find((c) => c.id === chainId);
+    if (!chain) return null;
+
+    const blockExplorer = chain.blockExplorers?.default;
+    if (!blockExplorer) return null;
+    return `${blockExplorer.url}/tx/${txStatus.txHash}`;
+  }, [txStatus, chainId]);
+
   return (
-    <div>
-      <div>Target Chain: {chainId}</div>
+    <>
       <div>
-        Account public key: {account.polkadotSigner.publicKey.toString()}
+        <Button disabled={!account} onClick={handleSendClick}>
+          Send
+        </Button>
       </div>
-      {/* <button onClick={handleClick}>Send</button> */}
-    </div>
+      <div>
+        {!!blockExplorerUrl && (
+          <a href={blockExplorerUrl}>View on block explorer</a>
+        )}
+      </div>
+    </>
   );
 };
 

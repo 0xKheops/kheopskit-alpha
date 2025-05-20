@@ -2,28 +2,30 @@ import { defineChain } from "@reown/appkit/networks";
 
 import * as viemChains from "viem/chains";
 
-export const polkadot = defineChain({
-  id: "91b171bb158e2d3848fa23a9f1c25182",
-  name: "Polkadot",
+export const polkadotAssetHub = defineChain({
+  id: "polkadotAssetHub",
+  // id: "68d56f15f85d3136970ec16946040bc1",
+  name: "Polkadot Asset Hub",
   nativeCurrency: { name: "Polkadot", symbol: "DOT", decimals: 10 },
   rpcUrls: {
     default: {
-      http: ["https://rpc.polkadot.io"],
-      webSocket: ["wss://rpc.polkadot.io"],
+      http: ["https://polkadot-asset-hub-rpc.polkadot.io"],
+      webSocket: ["wss://polkadot-asset-hub-rpc.polkadot.io"],
     },
   },
   blockExplorers: {
     default: {
       name: "Polkadot Explorer",
-      url: "https://polkadot.js.org/apps/",
+      url: "https://assethub-polkadot.subscan.io/",
     },
   },
   chainNamespace: "polkadot",
-  caipNetworkId: "polkadot:91b171bb158e2d3848fa23a9f1c25182",
+  caipNetworkId: "polkadot:68d56f15f85d3136970ec16946040bc1",
 });
 
 export const westendAssetHub = defineChain({
-  id: "67f9723393ef76214df0118c34bbbd3d",
+  // id: "67f9723393ef76214df0118c34bbbd3d",
+  id: "westendAssetHub",
   name: "Westend Asset Hub",
   nativeCurrency: { name: "Westend", symbol: "WND", decimals: 10 },
   rpcUrls: {
@@ -35,7 +37,7 @@ export const westendAssetHub = defineChain({
   blockExplorers: {
     default: {
       name: "Polkadot Explorer",
-      url: "https://polkadot.js.org/apps/",
+      url: "https://assethub-westend.subscan.io/",
     },
   },
   chainNamespace: "polkadot",
@@ -78,13 +80,12 @@ export const ethWestendAssetHub = defineChain({
   caipNetworkId: "eip155:420420421",
 });
 
-export const SUPPORTED_CHAINS = [
-  polkadot,
+export const APPKIT_CHAINS = [
+  polkadotAssetHub,
   westendAssetHub,
   ethMainnet,
   ethWestendAssetHub,
 ];
 
-export const VIEM_CHAINS_BY_ID = Object.fromEntries(
-  Object.values(viemChains).map((c) => [c.id, c]),
-);
+export const VIEM_CHAINS_BY_ID: Record<number, viemChains.Chain> =
+  Object.fromEntries(Object.values(viemChains).map((c) => [c.id, c]));

@@ -22,7 +22,6 @@ import {
   custom,
   getAddress,
 } from "viem";
-import { mainnet } from "viem/chains";
 
 const getInjectedWalletAccounts$ = (
   wallet: EthereumInjectedWallet,
@@ -32,6 +31,7 @@ const getInjectedWalletAccounts$ = (
   return new Observable<EthereumAccount[]>((subscriber) => {
     const getAccount = (address: string, i: number): EthereumAccount => {
       const client = createWalletClient({
+        account: address as `0x${string}`,
         transport: custom(wallet.provider as EIP1193Provider),
       });
 
@@ -114,7 +114,6 @@ const getAppKitAccounts$ = (
     account.allAccounts.map((acc, i): EthereumAccount => {
       const client = createWalletClient({
         account: acc.address as `0x${string}`,
-        chain: mainnet,
         transport: custom(wrappedProvider),
       });
 

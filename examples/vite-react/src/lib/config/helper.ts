@@ -4,7 +4,7 @@ import type { AppKitNetwork } from "@reown/appkit/networks";
 import {
   ethMainnet,
   ethWestendAssetHub,
-  polkadot,
+  polkadotAssetHub,
   westendAssetHub,
 } from "./chains";
 
@@ -33,7 +33,9 @@ export const ensureConfig = (
 
 const getNetworks = (platforms: KheopskitConfig["platforms"]) => {
   const networks: AppKitNetwork[] = [
-    ...(platforms.includes("polkadot") ? [polkadot, westendAssetHub] : []),
+    ...(platforms.includes("polkadot")
+      ? [polkadotAssetHub, westendAssetHub]
+      : []),
     ...(platforms.includes("ethereum") ? [ethMainnet, ethWestendAssetHub] : []),
   ];
 

@@ -7,7 +7,12 @@ import type {
   InjectedExtension,
   InjectedPolkadotAccount,
 } from "polkadot-api/pjs-signer";
-import type { EIP1193Provider, WalletClient } from "viem";
+import type {
+  Account,
+  CustomTransport,
+  EIP1193Provider,
+  WalletClient,
+} from "viem";
 
 export type KheopskitConfig = {
   autoReconnect: boolean;
@@ -92,7 +97,7 @@ export type PolkadotAccount = InjectedPolkadotAccount & {
 export type EthereumAccount = {
   id: WalletAccountId;
   platform: "ethereum";
-  client: WalletClient;
+  client: WalletClient<CustomTransport, undefined, Account, undefined>; // let consumer knows chain is unknown
   address: `0x${string}`;
   walletName: string;
   walletId: string;
