@@ -13,7 +13,7 @@ Try it on the [interactive playground](https://Kheopskit-alpha.pages.dev/)
 
 - **Multi-wallet support**: Easily interact with both Polkadot and Ethereum wallets.
 - **Account management**: Manage accounts from all connected wallets in a single list.
-- **Modern tech stack**: Designed for use with polkadot-api (PAPI) and viem
+- **Modern tech stack**: Designed for use with polkadot-api (PAPI) and viem.
 
 ---
 
