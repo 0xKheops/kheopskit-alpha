@@ -16,7 +16,7 @@ import type {
 import { useWallets } from "@kheopskit/react";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import type { TxEvent } from "polkadot-api";
-import { type FC, useCallback, useEffect, useMemo, useState } from "react";
+import { type FC, useEffect, useMemo, useState } from "react";
 import type { Observable } from "rxjs";
 import { toast } from "sonner";
 import { http, type RpcError, createPublicClient, isHex } from "viem";

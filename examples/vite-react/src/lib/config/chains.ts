@@ -82,12 +82,14 @@ export const ethWestendAssetHub = defineChain({
 
 export const moonbaseAlpha = defineChain({
   ...viemChains.moonbaseAlpha,
+  id: viemChains.moonbaseAlpha.id.toString(),
   chainNamespace: "eip155",
   caipNetworkId: `eip155:${viemChains.moonbaseAlpha.id}}`,
 });
 
 export const sepolia = defineChain({
   ...viemChains.sepolia,
+  id: viemChains.sepolia.id.toString(),
   chainNamespace: "eip155",
   caipNetworkId: `eip155:${viemChains.sepolia.id}}`,
 });
