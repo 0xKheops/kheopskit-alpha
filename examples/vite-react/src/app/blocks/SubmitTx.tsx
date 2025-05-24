@@ -8,14 +8,18 @@ import {
 } from "@/components/ui/select";
 import { APPKIT_CHAINS, VIEM_CHAINS_BY_ID } from "@/lib/config/chains";
 import { type PolkadotChainId, getPolkadotApi } from "@/lib/getPolkadotApi";
-import type { EthereumAccount, PolkadotAccount } from "@kheopskit/core";
+import type {
+  EthereumAccount,
+  PolkadotAccount,
+  WalletAccount,
+} from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import type { TxEvent } from "polkadot-api";
-import { type FC, useEffect, useMemo, useState } from "react";
+import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import type { Observable } from "rxjs";
 import { toast } from "sonner";
-import { http, type RpcError, createPublicClient } from "viem";
+import { http, type RpcError, createPublicClient, isHex } from "viem";
 import { AppBlock } from "./AppBlock";
 
 export const SubmitTx = () => (
@@ -39,6 +43,11 @@ const Content = () => {
     () => accounts.find((a) => a.id === accountId) ?? null,
     [accountId, accounts],
   );
+  const [recipientId, setRecipientId] = useState<string>();
+  const recipient = useMemo(
+    () => accounts.find((a) => a.id === recipientId) ?? null,
+    [recipientId, accounts],
+  );
 
   const networks = useMemo(() => {
     if (!account) return [];
@@ -60,6 +69,10 @@ const Content = () => {
   useEffect(() => {
     if (!account && accounts.length) setAccountId(accounts[0].id);
   }, [account, accounts]);
+
+  useEffect(() => {
+    if (!recipient && accounts.length) setRecipientId(accounts[0].id);
+  }, [recipient, accounts]);
 
   useEffect(() => {
     if (!network && networks.length) setNetworkId(networks[0].id);
@@ -102,33 +115,63 @@ const Content = () => {
             </SelectContent>
           </Select>
         </div>
+        <div>Account</div>
+        <div>
+          <Select onValueChange={setRecipientId} value={recipient?.id ?? ""}>
+            <SelectTrigger>
+              <SelectValue placeholder="Recipient" />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.map((account) => (
+                <SelectItem key={account.id} value={account.id}>
+                  [{account.walletName}]{" "}
+                  {(account.platform === "polkadot" && account.name) ||
+                    account.address}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        {!!network && account?.platform === "ethereum" && (
-          <SubmitEthxTx chainId={Number(network.id)} account={account} />
-        )}
+        {!!network &&
+          account?.platform === "ethereum" &&
+          isHex(recipient?.address) && (
+            <SubmitEthxTx
+              chainId={Number(network.id)}
+              account={account}
+              recipient={recipient}
+            />
+          )}
 
-        {!!network && account?.platform === "polkadot" && (
-          <SubmitTxDot chainId={network.id} account={account} />
-        )}
+        {!!network &&
+          account?.platform === "polkadot" &&
+          recipient?.platform === "polkadot" && (
+            <SubmitTxDot
+              chainId={network.id}
+              account={account}
+              recipient={recipient}
+            />
+          )}
       </div>
     </div>
   );
 };
 
-const SubmitEthxTx: FC<{ chainId: number; account: EthereumAccount }> = ({
-  chainId,
-  account,
-}) => {
+const SubmitEthxTx: FC<{
+  chainId: number;
+  account: EthereumAccount;
+  recipient: WalletAccount;
+}> = ({ chainId, account, recipient }) => {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const chain = VIEM_CHAINS_BY_ID[chainId] as any;
 
   const [txHash, setTxHash] = useState<string | null>(null);
 
   const handleSendClick = async () => {
-    if (!account) return;
-
+    if (!isHex(recipient.address)) return;
     try {
       const walletChainId = await account.client.getChainId();
+
       console.log("walletChainId", walletChainId);
       if (walletChainId !== chainId) {
         try {
@@ -142,17 +185,26 @@ const SubmitEthxTx: FC<{ chainId: number; account: EthereumAccount }> = ({
           });
         }
       }
+      console.log("chain switched");
+
+      const publicClient = createPublicClient({ chain, transport: http() });
+      const gas = await publicClient.estimateGas({
+        to: recipient.address,
+        value: 0n,
+      });
+
+      console.log({ gas });
 
       const hash = await account.client.sendTransaction({
         chain,
-        to: account.address,
+        to: recipient.address,
         value: 0n,
+        gas,
       });
       setTxHash(hash);
 
       toast.success(`Transaction submitted: ${hash}`);
 
-      const publicClient = createPublicClient({ chain, transport: http() });
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
       if (receipt.status === "success") toast.success("Transaction successful");
@@ -174,7 +226,10 @@ const SubmitEthxTx: FC<{ chainId: number; account: EthereumAccount }> = ({
   return (
     <>
       <div>
-        <Button disabled={!account || !chain} onClick={handleSendClick}>
+        <Button
+          disabled={!account || !chain || !isHex(recipient.address)}
+          onClick={handleSendClick}
+        >
           Send
         </Button>
       </div>
@@ -187,10 +242,11 @@ const SubmitEthxTx: FC<{ chainId: number; account: EthereumAccount }> = ({
   );
 };
 
-const SubmitTxDot: FC<{ chainId: string; account: PolkadotAccount }> = ({
-  chainId,
-  account,
-}) => {
+const SubmitTxDot: FC<{
+  chainId: string;
+  account: PolkadotAccount;
+  recipient: PolkadotAccount;
+}> = ({ chainId, account, recipient }) => {
   const [tx, setTx] = useState<Observable<TxEvent>>();
   const [txStatus, setTxStatus] = useState<TxEvent | null>(null);
 
@@ -239,13 +295,11 @@ const SubmitTxDot: FC<{ chainId: string; account: PolkadotAccount }> = ({
   }, [tx]);
 
   const handleSendClick = () => {
-    if (!account) return;
-
     try {
       const api = getPolkadotApi(chainId as PolkadotChainId);
 
       const tx$ = api.tx.Balances.transfer_keep_alive({
-        dest: MultiAddress.Id(account.address),
+        dest: MultiAddress.Id(recipient.address),
         value: 0n,
       }).signSubmitAndWatch(account.polkadotSigner);
 

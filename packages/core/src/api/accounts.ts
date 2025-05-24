@@ -9,7 +9,7 @@ export const getAccounts$ = (
   wallets: Observable<Wallet[]>,
 ) => {
   return new Observable<WalletAccount[]>((subscriber) => {
-    const observables = config.platforms.map<Observable<WalletAccount[]>>(
+    const sources = config.platforms.map<Observable<WalletAccount[]>>(
       (platform) => {
         switch (platform) {
           case "polkadot":
@@ -28,8 +28,8 @@ export const getAccounts$ = (
       },
     );
 
-    const accounts$ = observables.length
-      ? combineLatest(observables).pipe(
+    const accounts$ = sources.length
+      ? combineLatest(sources).pipe(
           map((accounts) => accounts.flat().sort(sortAccounts)),
         )
       : of([]);

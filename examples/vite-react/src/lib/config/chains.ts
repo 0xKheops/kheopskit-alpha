@@ -80,11 +80,25 @@ export const ethWestendAssetHub = defineChain({
   caipNetworkId: "eip155:420420421",
 });
 
+export const moonbaseAlpha = defineChain({
+  ...viemChains.moonbaseAlpha,
+  chainNamespace: "eip155",
+  caipNetworkId: `eip155:${viemChains.moonbaseAlpha.id}}`,
+});
+
+export const sepolia = defineChain({
+  ...viemChains.sepolia,
+  chainNamespace: "eip155",
+  caipNetworkId: `eip155:${viemChains.sepolia.id}}`,
+});
+
 export const APPKIT_CHAINS = [
   polkadotAssetHub,
   westendAssetHub,
   ethMainnet,
+  sepolia,
   ethWestendAssetHub,
+  moonbaseAlpha,
 ];
 
 export const VIEM_CHAINS_BY_ID: Record<number, viemChains.Chain> =

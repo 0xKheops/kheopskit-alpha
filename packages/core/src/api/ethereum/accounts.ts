@@ -8,6 +8,7 @@ import { getWalletAccountId } from "@/utils";
 import { logObservable } from "@/utils/logObservable";
 import type UniversalProvider from "@walletconnect/universal-provider";
 import {
+  BehaviorSubject,
   Observable,
   combineLatest,
   distinctUntilChanged,
@@ -78,8 +79,11 @@ const wrapWalletConnectProvider = (
   return new Proxy(provider, {
     get(target, prop, receiver) {
       if (prop !== "request") return Reflect.get(target, prop, receiver);
+
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       return (args: any) => {
+        console.log("request", { target, prop, receiver, caipNetworkId, args });
+
         if (args && typeof args === "object" && args.method) {
           if (!args.topic) args.topic = sessionTopic;
           if (!args.chainId) args.chainId = caipNetworkId;
@@ -104,30 +108,57 @@ const getAppKitAccounts$ = (
   )
     return of([]);
 
-  const wrappedProvider = wrapWalletConnectProvider(
-    provider as EIP1193Provider,
-    provider.session.topic,
-    "eip155:1",
-  );
+  return new Observable<EthereumAccount[]>((subscriber) => {
+    const caipNetworkId$ = new BehaviorSubject<string>("eip155:1");
 
-  return of(
-    account.allAccounts.map((acc, i): EthereumAccount => {
-      const client = createWalletClient({
-        account: acc.address as `0x${string}`,
-        transport: custom(wrappedProvider),
-      });
+    const handleChainChanged = (chainId: string) => {
+      console.log("[AppKit] chainChanged", chainId);
+      caipNetworkId$.next(`eip155:${chainId}`);
+    };
 
-      return {
-        id: getWalletAccountId(wallet.id, acc.address),
-        platform: "ethereum",
-        walletName: wallet.name,
-        walletId: wallet.id,
-        address: acc.address as `0x${string}`,
-        client,
-        isWalletDefault: i === 0,
-      };
-    }),
-  );
+    provider.on("chainChanged", handleChainChanged);
+    provider.request({ method: "eth_chainId" }).then((chainId) => {
+      caipNetworkId$.next(`eip155:${chainId}`);
+    });
+
+    const sub = caipNetworkId$
+      .pipe(
+        map((caipNetworkId) =>
+          custom(
+            wrapWalletConnectProvider(
+              provider as EIP1193Provider,
+              // biome-ignore lint/style/noNonNullAssertion: <explanation>
+              provider.session!.topic,
+              caipNetworkId,
+            ),
+          ),
+        ),
+        map((transport) =>
+          account.allAccounts.map((acc, i): EthereumAccount => {
+            const client = createWalletClient({
+              account: acc.address as `0x${string}`,
+              transport,
+            });
+
+            return {
+              id: getWalletAccountId(wallet.id, acc.address),
+              platform: "ethereum",
+              walletName: wallet.name,
+              walletId: wallet.id,
+              address: acc.address as `0x${string}`,
+              client,
+              isWalletDefault: i === 0,
+            };
+          }),
+        ),
+      )
+      .subscribe(subscriber);
+
+    return () => {
+      provider.off("chainChanged", handleChainChanged);
+      sub.unsubscribe();
+    };
+  });
 };
 
 export const getEthereumAccounts$ = (

@@ -4,7 +4,9 @@ import type { AppKitNetwork } from "@reown/appkit/networks";
 import {
   ethMainnet,
   ethWestendAssetHub,
+  moonbaseAlpha,
   polkadotAssetHub,
+  sepolia,
   westendAssetHub,
 } from "./chains";
 
@@ -36,7 +38,9 @@ const getNetworks = (platforms: KheopskitConfig["platforms"]) => {
     ...(platforms.includes("polkadot")
       ? [polkadotAssetHub, westendAssetHub]
       : []),
-    ...(platforms.includes("ethereum") ? [ethMainnet, ethWestendAssetHub] : []),
+    ...(platforms.includes("ethereum")
+      ? [ethMainnet, sepolia, moonbaseAlpha, ethWestendAssetHub]
+      : []),
   ];
 
   return networks.length

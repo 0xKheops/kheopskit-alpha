@@ -38,6 +38,7 @@ export type PolkadotInjectedWallet = {
   extensionId: string;
   extension: InjectedExtension | undefined;
   name: string;
+  icon: string;
   isConnected: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;
@@ -49,6 +50,7 @@ export type PolkadotAppKitWallet = {
   type: "appKit";
   appKit: AppKit;
   name: string;
+  icon: string;
   isConnected: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;

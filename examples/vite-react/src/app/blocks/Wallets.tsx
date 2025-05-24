@@ -32,7 +32,16 @@ export const Wallets = () => {
           {wallets.map((wallet) => (
             <TableRow key={wallet.id}>
               <TableCell>{wallet.platform}</TableCell>
-              <TableCell>{wallet.name}</TableCell>
+              <TableCell>
+                {wallet.icon ? (
+                  <img
+                    src={wallet.icon}
+                    alt={wallet.name}
+                    className="w-6 h-6 mr-2 inline"
+                  />
+                ) : null}
+                {wallet.name}
+              </TableCell>
               <TableCell className="text-right">
                 {accounts.filter((a) => a.walletId === wallet.id).length}
               </TableCell>
