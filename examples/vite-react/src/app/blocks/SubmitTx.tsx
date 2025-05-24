@@ -7,10 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { APPKIT_CHAINS, VIEM_CHAINS_BY_ID } from "@/lib/config/chains";
-import {
-  type PolkadotChainId,
-  getPolkadotApi,
-} from "@/lib/config/getPolkadotApi";
+import { type PolkadotChainId, getPolkadotApi } from "@/lib/getPolkadotApi";
 import type { EthereumAccount, PolkadotAccount } from "@kheopskit/core";
 import { useWallets } from "@kheopskit/react";
 import { MultiAddress } from "@polkadot-api/descriptors";

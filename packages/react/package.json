@@ -25,21 +25,21 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "rxjs": ">=7.8.0",
+    "polkadot-api": ">=1.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "polkadot-api": ">=1.10.0"
+    "rxjs": ">=7.8.0"
   },
   "dependencies": {
     "@kheopskit/core": "workspace:*"
   },
   "devDependencies": {
-    "rxjs": "^7.8.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "polkadot-api": "^1.10.0"
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "polkadot-api": "^1.12.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "rxjs": "^7.8.2"
   },
   "tsup": {
     "entry": ["src/index.ts"],
