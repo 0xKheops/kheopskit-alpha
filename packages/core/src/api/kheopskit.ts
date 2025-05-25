@@ -1,15 +1,25 @@
-import { Observable, combineLatest, shareReplay } from "rxjs";
+import {
+  Observable,
+  combineLatest,
+  map,
+  shareReplay,
+  throttleTime,
+} from "rxjs";
 import { getAccounts$ } from "./accounts";
-import { getConfig } from "./config";
+import { resolveConfig } from "./config";
 import type { KheopskitConfig, Wallet, WalletAccount } from "./types";
 import { getWallets$ } from "./wallets";
 
 export type { KheopskitConfig } from "./types";
 
-export type KheopskitState = { wallets: Wallet[]; accounts: WalletAccount[] };
+export type KheopskitState = {
+  wallets: Wallet[];
+  accounts: WalletAccount[];
+  config: KheopskitConfig;
+};
 
 export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
-  const kc = getConfig(config);
+  const kc = resolveConfig(config);
 
   console.log("[kheopskit] config", kc);
 
@@ -19,10 +29,18 @@ export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
     const subscription = combineLatest({
       wallets: wallets$,
       accounts: getAccounts$(kc, wallets$),
-    }).subscribe(subscriber);
+    })
+      .pipe(map(({ wallets, accounts }) => ({ config: kc, wallets, accounts })))
+      .subscribe((next) => {
+        console.log("[kheopskit] next", next);
+        subscriber.next(next);
+      });
 
     return () => {
       subscription.unsubscribe();
     };
-  }).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  }).pipe(
+    throttleTime(50, undefined, { leading: true, trailing: true }),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 };

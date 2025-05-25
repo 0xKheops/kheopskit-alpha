@@ -37,6 +37,14 @@ export const SubmitTx = () => (
 );
 
 const Content = () => {
+  const defaultNetworkId = useDefaultNetworkId();
+  const [networkId, setNetworkId] = useState<string>(defaultNetworkId);
+
+  const network = useMemo(
+    () => APPKIT_CHAINS.find((a) => a.id === networkId) ?? null,
+    [networkId],
+  );
+
   const { accounts } = useWallets(); // kheopskit
   const [accountId, setAccountId] = useState<string>();
   const account = useMemo(
@@ -49,41 +57,36 @@ const Content = () => {
     [recipientId, accounts],
   );
 
-  const networks = useMemo(() => {
-    if (!account) return [];
-    return APPKIT_CHAINS.filter((chain) => {
-      switch (account.platform) {
-        case "ethereum":
-          return chain.chainNamespace === "eip155";
-        case "polkadot":
-          return chain.chainNamespace === "polkadot";
+  useEffect(() => {
+    if ((!account || !recipient) && network && accounts.length) {
+      const platform = /^\d+$/.test(network.id) ? "ethereum" : "polkadot";
+      const match = accounts.find((a) => a.platform === platform);
+      if (match) {
+        setAccountId(match.id);
+        setRecipientId(match.id);
       }
-    });
-  }, [account]);
-  const [networkId, setNetworkId] = useState<string>();
-  const network = useMemo(
-    () => networks.find((a) => a.id === networkId) ?? null,
-    [networkId, networks],
-  );
-
-  useEffect(() => {
-    if (!account && accounts.length) setAccountId(accounts[0].id);
-  }, [account, accounts]);
-
-  useEffect(() => {
-    if (!recipient && accounts.length) setRecipientId(accounts[0].id);
-  }, [recipient, accounts]);
-
-  useEffect(() => {
-    if (!network && networks.length) setNetworkId(networks[0].id);
-  }, [network, networks]);
-
-  console.log("tx", { account, network });
+    }
+  }, [account, recipient, network, accounts]);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="inline-grid grid-cols-[100px_auto] gap-4 items-center">
-        <div>Account</div>
+        <div>Network</div>
+        <div>
+          <Select onValueChange={setNetworkId} value={network?.id ?? ""}>
+            <SelectTrigger>
+              <SelectValue placeholder="Network" />
+            </SelectTrigger>
+            <SelectContent>
+              {APPKIT_CHAINS.map((network) => (
+                <SelectItem key={network.id} value={network.id}>
+                  {network.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>From</div>
         <div>
           <Select onValueChange={setAccountId} value={account?.id ?? ""}>
             <SelectTrigger>
@@ -100,22 +103,7 @@ const Content = () => {
             </SelectContent>
           </Select>
         </div>
-        <div>Network</div>
-        <div>
-          <Select onValueChange={setNetworkId} value={network?.id ?? ""}>
-            <SelectTrigger>
-              <SelectValue placeholder="Network" />
-            </SelectTrigger>
-            <SelectContent>
-              {networks.map((network) => (
-                <SelectItem key={network.id} value={network.id}>
-                  {network.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>Account</div>
+        <div>To</div>
         <div>
           <Select onValueChange={setRecipientId} value={recipient?.id ?? ""}>
             <SelectTrigger>
@@ -337,99 +325,31 @@ const SubmitTxDot: FC<{
   );
 };
 
-// const Connectors = () => {
-//   const { connectors, connect } = useConnect();
-//   const { connector: current, address } = useAccount();
+const useDefaultNetworkId = () => {
+  const { config } = useWallets();
 
-//   return (
-//     <div>
-//       <h3>Connectors</h3>
-//       <div className="text-muted-foreground text-sm">
-//         Select active Wagmi connector:
-//       </div>
-//       <ul className="flex flex-wrap gap-2 py-1">
-//         {connectors.map((connector) => (
-//           <li key={connector.id}>
-//             <Button
-//               onClick={() => connect({ connector })}
-//               variant={"outline"}
-//               disabled={connector.id === current?.id}
-//               className="disabled:bg-green-500"
-//             >
-//               {connector.icon && (
-//                 <img src={connector.icon} alt="" className="size-4" />
-//               )}{" "}
-//               {connector.name}
-//             </Button>
-//           </li>
-//         ))}
-//       </ul>
-//       <div className="text-sm text-muted-foreground">
-//         <div>Active connector: {current?.name ?? "N/A"}</div>
-//         <div>Active account: {address ?? "N/A"}</div>
-//       </div>
-//     </div>
-//   );
-// };
+  return useMemo(() => {
+    if (!config.platforms?.length)
+      throw new Error("No platforms configured in KheopskitConfig");
 
-// const ActiveAccount = () => {
-//   const { accounts } = useWallets(); // kheopskit
-//   const [accountId, setAccountId] = useState<string>();
+    if (config.platforms.includes("polkadot")) {
+      const polkadotChains = APPKIT_CHAINS.filter(
+        (c) => c.chainNamespace === "polkadot",
+      );
+      if (!polkadotChains.length)
+        throw new Error("No Polkadot chains configured in KheopskitConfig");
+      return polkadotChains[0].id;
+    }
 
-//   const account = useMemo(
-//     () => accounts.find((a) => a.id === accountId) ?? null,
-//     [accountId, accounts],
-//   );
+    if (config.platforms.includes("ethereum")) {
+      const ethereumChains = APPKIT_CHAINS.filter(
+        (c) => c.chainNamespace === "eip155",
+      );
+      if (!ethereumChains.length)
+        throw new Error("No Ethereum chains configured in KheopskitConfig");
+      if (ethereumChains.length === 1) return ethereumChains[0].id;
+    }
 
-//   const handleClick = async () => {
-//     const account = accounts.find((a) => a.id === accountId);
-//     if (!account || account.platform !== "ethereum") return;
-
-//     try {
-//       const signature = await account.client.signMessage({
-//         message: "Hello Wagmi!",
-//         account: account.address,
-//       });
-
-//       toast.success(`Signature: ${signature}`);
-//     } catch (err) {
-//       console.error(err);
-//       toast.error(`Error: ${(err as Error).message}`);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h3>Best practice with Kheopskit</h3>
-//       <p className="text-muted-foreground text-sm">
-//         It's bad UX to have to switch the active Wagmi connector prior to do an
-//         action with it, as it can trigger wallet prompts.
-//         <br />
-//         When doing an action using an account from the Kheopskit accounts list,
-//         it's best to lookup the associated wagmi connector and pass it as an
-//         argument to the hook or method call.
-//         <br />
-//         This example showcases this approach:
-//       </p>
-//       <div className="flex gap-4 mt-2">
-//         <Select onValueChange={setAccountId}>
-//           <SelectTrigger className="w-[180px]">
-//             <SelectValue placeholder="Account" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             {accounts
-//               .filter((a) => a.platform === "ethereum")
-//               .map((account) => (
-//                 <SelectItem key={account.id} value={account.id}>
-//                   {account.walletName} - {account.address}
-//                 </SelectItem>
-//               ))}
-//           </SelectContent>
-//         </Select>
-//         <Button onClick={handleClick} className="py-0" disabled={!account}>
-//           Sign
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// };
+    throw new Error("No default network found for the selected platforms");
+  }, [config.platforms]);
+};

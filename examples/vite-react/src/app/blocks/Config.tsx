@@ -26,6 +26,7 @@ const AutoReconnect = () => {
         onCheckedChange={(checked) => {
           if (typeof checked !== "boolean") return;
           setAutoReconnect(checked);
+          window.location.reload();
         }}
       />
       <div className="grid gap-1.5 leading-none">
@@ -66,6 +67,7 @@ const Platforms = () => {
               onCheckedChange={(checked) => {
                 if (typeof checked !== "boolean") return;
                 setPlatformEnabled(platform, checked);
+                window.location.reload();
               }}
             />
             <label

@@ -5,7 +5,7 @@ const DEFAULT_CONFIG: KheopskitConfig = {
   platforms: ["polkadot"],
 };
 
-export const getConfig = (
+export const resolveConfig = (
   config: Partial<KheopskitConfig> | undefined,
 ): KheopskitConfig => {
   return Object.assign({}, DEFAULT_CONFIG, config);
