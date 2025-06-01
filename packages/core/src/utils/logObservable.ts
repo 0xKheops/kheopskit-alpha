@@ -1,14 +1,21 @@
 import { type MonoTypeOperatorFunction, tap } from "rxjs";
 
+type Opts = {
+  printValue?: boolean;
+  enabled?: boolean;
+};
+
 export const logObservable = <T>(
   label: string,
-  printOutput = false,
+  opts?: Opts,
 ): MonoTypeOperatorFunction<T> =>
   tap((value) => {
-    if (!label) return;
+    const { printValue = false, enabled = true } = opts || {};
+
+    if (!label || !enabled) return;
 
     const text = `[kheopskit] observable ${label} emit`;
 
-    if (printOutput) console.debug(text, { value });
+    if (printValue) console.debug(text, value);
     else console.debug(text);
   });

@@ -18,6 +18,7 @@ const demoConfigStore = createStore<PlaygroundConfig>("playground.config", {
   autoReconnect: true,
   platforms: ["polkadot"],
   walletConnect: true,
+  debug: true,
 });
 
 export const usePlaygroundConfig = () => {

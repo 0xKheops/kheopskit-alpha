@@ -39,7 +39,7 @@ export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
     };
   }).pipe(
     throttleTime(50, undefined, { leading: true, trailing: true }),
-    logObservable("kheopskit$"),
+    logObservable("kheopskit$", { enabled: kc.debug, printValue: true }),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 };

@@ -28,6 +28,7 @@ export type KheopskitConfig = {
      */
     networks: [AppKitNetwork, ...AppKitNetwork[]];
   };
+  debug: boolean;
 };
 
 export type PolkadotInjectedWallet = {
