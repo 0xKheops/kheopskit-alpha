@@ -1,10 +1,10 @@
+import { GithubIcon } from "@/assets/GithubIcon";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { usePlaygroundConfig } from "@/lib/config/playgroundConfig";
 import { wagmiConfig } from "@/lib/wagmi";
 import { KheopskitProvider } from "@kheopskit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Github } from "lucide-react";
 import { WagmiProvider } from "wagmi";
 import { Accounts } from "./blocks/Accounts";
 import { Config } from "./blocks/Config";
@@ -15,19 +15,18 @@ import { Wallets } from "./blocks/Wallets";
 const queryClient = new QueryClient();
 
 export const App = () => {
-  // IMPORTANT config should be hardcoded
-  // This hook allows modifying the config live, but reloads the web page each time it changes.
+  // IMPORTANT on your app, kheopskit's config should be hardcoded
   const { kheopskitConfig: config } = usePlaygroundConfig();
 
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <KheopskitProvider config={config}>
+    <KheopskitProvider config={config}>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
           <AppContent />
           <Toaster />
-        </KheopskitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </KheopskitProvider>
   );
 };
 
@@ -36,7 +35,7 @@ const AppContent = () => (
     <div className="text-center space-y-2">
       <h1 className="text-3xl font-bold">Kheopskit Playground</h1>
       <div className="text-sm text-muted-foreground">
-        Library for multi platforms & wallets DApps
+        Library for connecting dapps to multiple platforms & wallets
       </div>
     </div>
     <Config />
@@ -52,7 +51,7 @@ const Footer = () => (
   <div>
     <Button asChild variant="ghost">
       <a href="https://github.com/0xKheops/kheopskit-alpha">
-        <Github />
+        <GithubIcon className="fill-white" />
         Github
       </a>
     </Button>
