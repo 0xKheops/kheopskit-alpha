@@ -57,10 +57,7 @@ const ethereumInjectedWallets$ = new Observable<EthereumInjectedWallet[]>(
       store.addEnabledWalletId(walletId);
     };
 
-    const disconnectWallet = async (
-      walletId: WalletId,
-      _provider: EIP1193Provider,
-    ) => {
+    const disconnectWallet = async (walletId: WalletId) => {
       if (!enabledWalletIds$.value.has(walletId))
         throw new Error(`Extension ${walletId} is not connected`);
       const newSet = new Set(enabledWalletIds$.value);
@@ -87,7 +84,7 @@ const ethereumInjectedWallets$ = new Observable<EthereumInjectedWallet[]>(
               isConnected: enabledWalletIds.has(walletId),
               providerId: pd.info.rdns,
               connect: () => connectWallet(walletId, provider),
-              disconnect: () => disconnectWallet(walletId, provider),
+              disconnect: () => disconnectWallet(walletId),
             };
           });
         }),
