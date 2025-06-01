@@ -140,7 +140,6 @@ export const getPolkadotAccounts$ = (
                 ...wallets
                   .filter((w) => w.type === "appKit")
                   .map(getAppKitAccounts$),
-                // todo appkit
               ])
             : of([]),
         ),
@@ -152,10 +151,7 @@ export const getPolkadotAccounts$ = (
     return () => {
       sub.unsubscribe();
     };
-  }).pipe(
-    // logObservable("polkadotAccounts$", true),
-    shareReplay({ refCount: true, bufferSize: 1 }),
-  );
+  }).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
 const isSameAccountsList = (a: PolkadotAccount[], b: PolkadotAccount[]) => {
   if (a.length !== b.length) return false;
