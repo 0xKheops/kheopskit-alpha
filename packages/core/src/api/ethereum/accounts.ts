@@ -5,11 +5,11 @@ import type {
   EthereumWallet,
 } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
-import { logObservable } from "@/utils/logObservable";
+import { getCachedObservable$ } from "@/utils/getCachedObservable";
 import type UniversalProvider from "@walletconnect/universal-provider";
 import {
-  BehaviorSubject,
   Observable,
+  ReplaySubject,
   combineLatest,
   distinctUntilChanged,
   map,
@@ -29,46 +29,52 @@ const getInjectedWalletAccounts$ = (
 ): Observable<EthereumAccount[]> => {
   if (!wallet.isConnected) return of([]);
 
-  return new Observable<EthereumAccount[]>((subscriber) => {
-    const getAccount = (address: string, i: number): EthereumAccount => {
-      const client = createWalletClient({
-        account: address as `0x${string}`,
-        transport: custom(wallet.provider as EIP1193Provider),
-      });
+  return getCachedObservable$(`accounts:${wallet.id}`, () =>
+    new Observable<EthereumAccount[]>((subscriber) => {
+      const getAccount = (address: string, i: number): EthereumAccount => {
+        // console.log("[Injected] createWalletClient", address);
+        const client = createWalletClient({
+          account: address as `0x${string}`,
+          transport: custom(wallet.provider as EIP1193Provider),
+        });
 
-      return {
-        id: getWalletAccountId(wallet.id, address),
-        platform: "ethereum",
-        client,
-        address: getAddress(address),
-        walletName: wallet.name,
-        walletId: wallet.id,
-        isWalletDefault: i === 0,
+        return {
+          id: getWalletAccountId(wallet.id, address),
+          platform: "ethereum",
+          client,
+          address: getAddress(address),
+          walletName: wallet.name,
+          walletId: wallet.id,
+          isWalletDefault: i === 0,
+        };
       };
-    };
 
-    const handleAccountsChanged = (addresses: string[]) => {
-      subscriber.next(addresses.map(getAccount));
-    };
-
-    // subscribe to changes
-    wallet.provider.on("accountsChanged", handleAccountsChanged);
-
-    // initial value
-    wallet.provider
-      .request({ method: "eth_accounts" })
-      .then((addresses: string[]) => {
+      const handleAccountsChanged = (addresses: string[]) => {
         subscriber.next(addresses.map(getAccount));
-      })
-      .catch((err) => {
-        console.error("Failed to get accounts", err);
-        subscriber.next([]);
-      });
+      };
 
-    return () => {
-      wallet.provider.removeListener("accountsChanged", handleAccountsChanged);
-    };
-  });
+      // subscribe to changes
+      wallet.provider.on("accountsChanged", handleAccountsChanged);
+
+      // initial value
+      wallet.provider
+        .request({ method: "eth_accounts" })
+        .then((addresses: string[]) => {
+          subscriber.next(addresses.map(getAccount));
+        })
+        .catch((err) => {
+          console.error("Failed to get accounts", err);
+          subscriber.next([]);
+        });
+
+      return () => {
+        wallet.provider.removeListener(
+          "accountsChanged",
+          handleAccountsChanged,
+        );
+      };
+    }).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+  );
 };
 
 const wrapWalletConnectProvider = (
@@ -82,7 +88,7 @@ const wrapWalletConnectProvider = (
 
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       return (args: any) => {
-        console.log("request", { target, prop, receiver, caipNetworkId, args });
+        // console.log("request", { target, prop, receiver, caipNetworkId, args });
 
         if (args && typeof args === "object" && args.method) {
           if (!args.topic) args.topic = sessionTopic;
@@ -108,57 +114,58 @@ const getAppKitAccounts$ = (
   )
     return of([]);
 
-  return new Observable<EthereumAccount[]>((subscriber) => {
-    const caipNetworkId$ = new BehaviorSubject<string>("eip155:1");
+  return getCachedObservable$("accounts:appKit", () =>
+    new Observable<EthereumAccount[]>((subscriber) => {
+      const caipNetworkId$ = new ReplaySubject<string>(1);
 
-    const handleChainChanged = (chainId: string) => {
-      console.log("[AppKit] chainChanged", chainId);
-      caipNetworkId$.next(`eip155:${chainId}`);
-    };
+      const handleChainChanged = (chainId: unknown) => {
+        caipNetworkId$.next(`eip155:${chainId}`);
+      };
 
-    provider.on("chainChanged", handleChainChanged);
-    provider.request({ method: "eth_chainId" }).then((chainId) => {
-      caipNetworkId$.next(`eip155:${chainId}`);
-    });
+      provider.on("chainChanged", handleChainChanged);
+      provider.request({ method: "eth_chainId" }).then(handleChainChanged);
 
-    const sub = caipNetworkId$
-      .pipe(
-        map((caipNetworkId) =>
-          custom(
-            wrapWalletConnectProvider(
-              provider as EIP1193Provider,
-              // biome-ignore lint/style/noNonNullAssertion: <explanation>
-              provider.session!.topic,
-              caipNetworkId,
+      const sub = caipNetworkId$
+        .pipe(
+          distinctUntilChanged(),
+          map((caipNetworkId) =>
+            custom(
+              wrapWalletConnectProvider(
+                provider as EIP1193Provider,
+                // biome-ignore lint/style/noNonNullAssertion: <explanation>
+                provider.session!.topic,
+                caipNetworkId,
+              ),
             ),
           ),
-        ),
-        map((transport) =>
-          account.allAccounts.map((acc, i): EthereumAccount => {
-            const client = createWalletClient({
-              account: acc.address as `0x${string}`,
-              transport,
-            });
+          map((transport) =>
+            account.allAccounts.map((acc, i): EthereumAccount => {
+              // console.log("[AppKit] createWalletClient", acc);
+              const client = createWalletClient({
+                account: acc.address as `0x${string}`,
+                transport,
+              });
 
-            return {
-              id: getWalletAccountId(wallet.id, acc.address),
-              platform: "ethereum",
-              walletName: wallet.name,
-              walletId: wallet.id,
-              address: acc.address as `0x${string}`,
-              client,
-              isWalletDefault: i === 0,
-            };
-          }),
-        ),
-      )
-      .subscribe(subscriber);
+              return {
+                id: getWalletAccountId(wallet.id, acc.address),
+                platform: "ethereum",
+                walletName: wallet.name,
+                walletId: wallet.id,
+                address: acc.address as `0x${string}`,
+                client,
+                isWalletDefault: i === 0,
+              };
+            }),
+          ),
+        )
+        .subscribe(subscriber);
 
-    return () => {
-      provider.off("chainChanged", handleChainChanged);
-      sub.unsubscribe();
-    };
-  });
+      return () => {
+        provider.off("chainChanged", handleChainChanged);
+        sub.unsubscribe();
+      };
+    }).pipe(shareReplay({ refCount: true, bufferSize: 1 })),
+  );
 };
 
 export const getEthereumAccounts$ = (
@@ -169,7 +176,6 @@ export const getEthereumAccounts$ = (
       .pipe(
         map((wallets) => wallets.filter((w) => w.isConnected)),
         switchMap((wallets) => {
-          console.log("Ethereum wallets", wallets);
           return wallets.length
             ? combineLatest([
                 ...wallets
@@ -191,7 +197,7 @@ export const getEthereumAccounts$ = (
       sub.unsubscribe();
     };
   }).pipe(
-    logObservable("polkadotAccounts$", true),
+    // logObservable("ethereumAccounts$", true),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
 

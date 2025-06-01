@@ -6,7 +6,6 @@ import type {
 } from "@/api/types";
 import { type WalletId, getWalletId, parseWalletId } from "@/utils/WalletId";
 import { EXTENSIONS } from "@/utils/extensions";
-import { logObservable } from "@/utils/logObservable";
 import { isEqual } from "lodash";
 import {
   type InjectedExtension,
@@ -80,7 +79,7 @@ export const polkadotInjectedWallets$ = new Observable<
             type: "injected",
             platform: "polkadot",
             name: extInfo?.name ?? identifier,
-            icon: extInfo?.icon ?? "null",
+            icon: extInfo?.icon ?? "",
             extensionId: identifier,
             extension,
             isConnected: !!extension,
@@ -97,7 +96,7 @@ export const polkadotInjectedWallets$ = new Observable<
     subscription.unsubscribe();
   };
 }).pipe(
-  logObservable("polkadotInjectedWallets$"),
+  // logObservable("polkadotInjectedWallets$"),
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
@@ -118,7 +117,7 @@ export const getPolkadotWallets$ = (config: KheopskitConfig) => {
       subscription.unsubscribe();
     };
   }).pipe(
-    logObservable("getPolkadotWallets$"),
+    // logObservable("getPolkadotWallets$"),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
 };

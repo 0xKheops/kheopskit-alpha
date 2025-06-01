@@ -5,7 +5,6 @@ import type {
   KheopskitConfig,
 } from "@/api/types";
 import { type WalletId, getWalletId } from "@/utils/WalletId";
-import { logObservable } from "@/utils/logObservable";
 import { type EIP6963ProviderDetail, createStore } from "mipd";
 import {
   BehaviorSubject,
@@ -35,7 +34,7 @@ const providersDetails$ = new Observable<EIP6963ProviderDetail[]>(
     };
   },
 ).pipe(
-  logObservable("providersDetails$"),
+  // logObservable("providersDetails$"),
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
@@ -149,7 +148,7 @@ const ethereumInjectedWallets$ = new Observable<EthereumInjectedWallet[]>(
     };
   },
 ).pipe(
-  logObservable("ethereumWallets$"),
+  // logObservable("ethereumWallets$"),
   shareReplay({ refCount: true, bufferSize: 1 }),
 );
 
@@ -170,7 +169,7 @@ export const getEthereumWallets$ = (config: KheopskitConfig) => {
       subscription.unsubscribe();
     };
   }).pipe(
-    logObservable("getEthereumWallets$"),
+    // logObservable("getEthereumWallets$"),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
 };

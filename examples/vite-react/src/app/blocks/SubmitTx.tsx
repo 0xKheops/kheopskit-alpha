@@ -6,7 +6,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { APPKIT_CHAINS, VIEM_CHAINS_BY_ID } from "@/lib/config/chains";
+import {
+  APPKIT_CHAINS,
+  APPKIT_CHAIN_ID_TO_DOT_CHAIN_ID,
+  VIEM_CHAINS_BY_ID,
+} from "@/lib/config/chains";
+import { isEthereumNetwork, isPolkadotNetwork } from "@/lib/config/helper";
 import { type PolkadotChainId, getPolkadotApi } from "@/lib/getPolkadotApi";
 import type {
   EthereumAccount,
@@ -26,7 +31,7 @@ export const SubmitTx = () => (
   <AppBlock
     title="Submitting a transaction"
     description={
-      "Demo transfer: selected account will send 0 tokens to self on selected network"
+      "Demo transfer: selected account will send 0 tokens on selected network"
     }
     codeUrl="https://github.com/0xKheops/kheopskit-alpha/blob/main/examples/vite-react/src/app/blocks/SubmitTx.tsx"
   >
@@ -38,7 +43,7 @@ export const SubmitTx = () => (
 
 const Content = () => {
   const defaultNetworkId = useDefaultNetworkId();
-  const [networkId, setNetworkId] = useState<string>(defaultNetworkId);
+  const [networkId, setNetworkId] = useState<string>(String(defaultNetworkId));
 
   const network = useMemo(
     () => APPKIT_CHAINS.find((a) => a.id === networkId) ?? null,
@@ -59,7 +64,9 @@ const Content = () => {
 
   useEffect(() => {
     if ((!account || !recipient) && network && accounts.length) {
-      const platform = /^\d+$/.test(network.id) ? "ethereum" : "polkadot";
+      const platform = /^\d+$/.test(String(network.id))
+        ? "ethereum"
+        : "polkadot";
       const match = accounts.find((a) => a.platform === platform);
       if (match) {
         setAccountId(match.id);
@@ -73,13 +80,16 @@ const Content = () => {
       <div className="inline-grid grid-cols-[100px_auto] gap-4 items-center">
         <div>Network</div>
         <div>
-          <Select onValueChange={setNetworkId} value={network?.id ?? ""}>
+          <Select
+            onValueChange={setNetworkId}
+            value={String(network?.id) ?? ""}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Network" />
             </SelectTrigger>
             <SelectContent>
               {APPKIT_CHAINS.map((network) => (
-                <SelectItem key={network.id} value={network.id}>
+                <SelectItem key={network.id} value={String(network.id)}>
                   {network.name}
                 </SelectItem>
               ))}
@@ -135,7 +145,7 @@ const Content = () => {
           account?.platform === "polkadot" &&
           recipient?.platform === "polkadot" && (
             <SubmitTxDot
-              chainId={network.id}
+              chainId={APPKIT_CHAIN_ID_TO_DOT_CHAIN_ID[network.id]}
               account={account}
               recipient={recipient}
             />
@@ -160,7 +170,7 @@ const SubmitEthxTx: FC<{
     try {
       const walletChainId = await account.client.getChainId();
 
-      console.log("walletChainId", walletChainId);
+      //console.log("walletChainId", walletChainId);
       if (walletChainId !== chainId) {
         try {
           await account.client.switchChain({
@@ -173,7 +183,7 @@ const SubmitEthxTx: FC<{
           });
         }
       }
-      console.log("chain switched");
+      // console.log("chain switched");
 
       const publicClient = createPublicClient({ chain, transport: http() });
       const gas = await publicClient.estimateGas({
@@ -181,7 +191,7 @@ const SubmitEthxTx: FC<{
         value: 0n,
       });
 
-      console.log({ gas });
+      // console.log({ gas });
 
       const hash = await account.client.sendTransaction({
         chain,
@@ -231,7 +241,7 @@ const SubmitEthxTx: FC<{
 };
 
 const SubmitTxDot: FC<{
-  chainId: string;
+  chainId: PolkadotChainId;
   account: PolkadotAccount;
   recipient: PolkadotAccount;
 }> = ({ chainId, account, recipient }) => {
@@ -284,6 +294,7 @@ const SubmitTxDot: FC<{
 
   const handleSendClick = () => {
     try {
+      console.log("Sending transaction", { chainId, recipient, account });
       const api = getPolkadotApi(chainId as PolkadotChainId);
 
       const tx$ = api.tx.Balances.transfer_keep_alive({
@@ -293,6 +304,7 @@ const SubmitTxDot: FC<{
 
       setTx(tx$);
     } catch (err) {
+      console.error("Error sending transaction", { err });
       toast.error(
         `Error: ${(err as RpcError).shortMessage ?? (err as Error).message}`,
       );
@@ -333,18 +345,14 @@ const useDefaultNetworkId = () => {
       throw new Error("No platforms configured in KheopskitConfig");
 
     if (config.platforms.includes("polkadot")) {
-      const polkadotChains = APPKIT_CHAINS.filter(
-        (c) => c.chainNamespace === "polkadot",
-      );
+      const polkadotChains = APPKIT_CHAINS.filter(isPolkadotNetwork);
       if (!polkadotChains.length)
         throw new Error("No Polkadot chains configured in KheopskitConfig");
       return polkadotChains[0].id;
     }
 
     if (config.platforms.includes("ethereum")) {
-      const ethereumChains = APPKIT_CHAINS.filter(
-        (c) => c.chainNamespace === "eip155",
-      );
+      const ethereumChains = APPKIT_CHAINS.filter(isEthereumNetwork);
       if (!ethereumChains.length)
         throw new Error("No Ethereum chains configured in KheopskitConfig");
       if (ethereumChains.length === 1) return ethereumChains[0].id;

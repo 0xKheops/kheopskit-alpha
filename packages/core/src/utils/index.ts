@@ -1,7 +1,7 @@
 // export all modules from this folder, except exports.ts
 export * from "./createStore";
 export * from "./getAccountAddressType";
-export * from "./AccountId";
+export * from "./WalletAccountId";
 export * from "./isEthereumAddress";
 export * from "./isSs58Address";
 export * from "./isTruthy";

@@ -5,7 +5,6 @@ import type {
   PolkadotWallet,
 } from "@/api/types";
 import { getWalletAccountId } from "@/utils";
-import { logObservable } from "@/utils/logObservable";
 import type { AppKit } from "@reown/appkit/core";
 import type UniversalProvider from "@walletconnect/universal-provider";
 import {
@@ -154,7 +153,7 @@ export const getPolkadotAccounts$ = (
       sub.unsubscribe();
     };
   }).pipe(
-    logObservable("polkadotAccounts$", true),
+    // logObservable("polkadotAccounts$", true),
     shareReplay({ refCount: true, bufferSize: 1 }),
   );
 

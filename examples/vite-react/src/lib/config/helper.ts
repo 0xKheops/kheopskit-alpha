@@ -1,20 +1,16 @@
 import type { KheopskitConfig } from "@kheopskit/core";
 
+import type { CaipNetwork } from "@reown/appkit/core";
 import type { AppKitNetwork } from "@reown/appkit/networks";
-import {
-  ethMainnet,
-  ethWestendAssetHub,
-  moonbaseAlpha,
-  polkadotAssetHub,
-  sepolia,
-  westendAssetHub,
-} from "./chains";
+import { APPKIT_CHAINS } from "./chains";
 
 export const ensureConfig = (
   config: Partial<KheopskitConfig>,
 ): Partial<KheopskitConfig> => {
   const platforms = config.platforms ?? [];
   const networks = getNetworks(platforms);
+
+  console.log("[appkit] networks", networks);
 
   return {
     ...config,
@@ -36,14 +32,24 @@ export const ensureConfig = (
 const getNetworks = (platforms: KheopskitConfig["platforms"]) => {
   const networks: AppKitNetwork[] = [
     ...(platforms.includes("polkadot")
-      ? [polkadotAssetHub, westendAssetHub]
+      ? APPKIT_CHAINS.filter(isPolkadotNetwork)
       : []),
     ...(platforms.includes("ethereum")
-      ? [ethMainnet, sepolia, moonbaseAlpha, ethWestendAssetHub]
+      ? APPKIT_CHAINS.filter(isEthereumNetwork)
       : []),
   ];
 
   return networks.length
     ? (networks as [AppKitNetwork, ...AppKitNetwork[]])
     : null;
+};
+
+export const isPolkadotNetwork = (network: AppKitNetwork): boolean => {
+  const n = network as CaipNetwork;
+  return n.chainNamespace === "polkadot";
+};
+
+export const isEthereumNetwork = (network: AppKitNetwork): boolean => {
+  const n = network as CaipNetwork;
+  return n.chainNamespace === "eip155";
 };

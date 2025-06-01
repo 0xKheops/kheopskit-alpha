@@ -31,7 +31,7 @@ export const getAppKitWallets$ = (
 ): Observable<AppKitWallets> => {
   if (!config.walletConnect) return of({}); // of(null).pipe(shareReplay({ refCount: true, bufferSize: 1 }));
 
-  console.log("[AppKit] getAppKitWallets$", config);
+  // console.log("[AppKit] getAppKitWallets$", config);
 
   const walletConnect = config.walletConnect;
 
@@ -114,7 +114,7 @@ export const getAppKitWallets$ = (
       }).subscribe(subscriber);
 
       return () => {
-        console.log("[AppKit] Unsubscribe providers");
+        // console.log("[AppKit] Unsubscribe providers");
         sub.unsubscribe();
         unsubProviders();
       };

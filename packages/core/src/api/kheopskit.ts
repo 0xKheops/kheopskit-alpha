@@ -1,3 +1,4 @@
+import { logObservable } from "@/utils/logObservable";
 import {
   Observable,
   combineLatest,
@@ -21,7 +22,7 @@ export type KheopskitState = {
 export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
   const kc = resolveConfig(config);
 
-  console.log("[kheopskit] config", kc);
+  console.debug("[kheopskit] config", kc);
 
   return new Observable<KheopskitState>((subscriber) => {
     const wallets$ = getWallets$(kc);
@@ -31,16 +32,14 @@ export const getKheopskit$ = (config?: Partial<KheopskitConfig>) => {
       accounts: getAccounts$(kc, wallets$),
     })
       .pipe(map(({ wallets, accounts }) => ({ config: kc, wallets, accounts })))
-      .subscribe((next) => {
-        console.log("[kheopskit] next", next);
-        subscriber.next(next);
-      });
+      .subscribe(subscriber);
 
     return () => {
       subscription.unsubscribe();
     };
   }).pipe(
     throttleTime(50, undefined, { leading: true, trailing: true }),
+    logObservable("kheopskit$"),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 };

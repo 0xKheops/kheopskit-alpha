@@ -1,10 +1,30 @@
-import { defineChain } from "@reown/appkit/networks";
+import { type AppKitNetwork, defineChain } from "@reown/appkit/networks";
 
 import * as viemChains from "viem/chains";
+import type { PolkadotChainId } from "../getPolkadotApi";
+
+export const polkadot = defineChain({
+  id: "91b171bb158e2d3848fa23a9f1c25182",
+  name: "Polkadot",
+  nativeCurrency: { name: "Polkadot", symbol: "DOT", decimals: 10 },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.ibp.network/polkadot"],
+      webSocket: ["wss://rpc.ibp.network/polkadot"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Polkadot Explorer",
+      url: "https://polkadot.subscan.io/",
+    },
+  },
+  chainNamespace: "polkadot",
+  caipNetworkId: "polkadot:91b171bb158e2d3848fa23a9f1c25182",
+});
 
 export const polkadotAssetHub = defineChain({
-  id: "polkadotAssetHub",
-  // id: "68d56f15f85d3136970ec16946040bc1",
+  id: "68d56f15f85d3136970ec16946040bc1",
   name: "Polkadot Asset Hub",
   nativeCurrency: { name: "Polkadot", symbol: "DOT", decimals: 10 },
   rpcUrls: {
@@ -24,8 +44,7 @@ export const polkadotAssetHub = defineChain({
 });
 
 export const westendAssetHub = defineChain({
-  // id: "67f9723393ef76214df0118c34bbbd3d",
-  id: "westendAssetHub",
+  id: "67f9723393ef76214df0118c34bbbd3d",
   name: "Westend Asset Hub",
   nativeCurrency: { name: "Westend", symbol: "WND", decimals: 10 },
   rpcUrls: {
@@ -44,64 +63,32 @@ export const westendAssetHub = defineChain({
   caipNetworkId: "polkadot:67f9723393ef76214df0118c34bbbd3d",
 });
 
-export const ethMainnet = defineChain({
-  id: "1",
-  name: "Ethereum",
-  nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
-  rpcUrls: {
-    default: {
-      http: ["https://rpc.ankr.com/eth"],
-      wss: "wss://rpc.ankr.com/eth",
-    },
-  },
-  blockExplorers: {
-    default: { name: "Etherscan", url: "https://etherscan.io/" },
-  },
-  chainNamespace: "eip155",
-  caipNetworkId: "eip155:1",
-});
+const viemChainToWalletConnectChain = (chain: viemChains.Chain) => {
+  return defineChain({
+    ...chain,
+    id: chain.id.toString(),
+    chainNamespace: "eip155",
+    caipNetworkId: `eip155:${chain.id}`,
+  });
+};
 
-export const ethWestendAssetHub = defineChain({
-  id: "420420421",
-  name: "Westend Asset Hub EVM",
-  nativeCurrency: { name: "Westend", symbol: "WND", decimals: 18 },
-  rpcUrls: {
-    default: {
-      http: ["https://westend-asset-hub-eth-rpc.polkadot.io"],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: "Blockscout",
-      url: "https://blockscout-asset-hub.parity-chains-scw.parity.io",
-    },
-  },
-  chainNamespace: "eip155",
-  caipNetworkId: "eip155:420420421",
-});
-
-export const moonbaseAlpha = defineChain({
-  ...viemChains.moonbaseAlpha,
-  id: viemChains.moonbaseAlpha.id.toString(),
-  chainNamespace: "eip155",
-  caipNetworkId: `eip155:${viemChains.moonbaseAlpha.id}}`,
-});
-
-export const sepolia = defineChain({
-  ...viemChains.sepolia,
-  id: viemChains.sepolia.id.toString(),
-  chainNamespace: "eip155",
-  caipNetworkId: `eip155:${viemChains.sepolia.id}}`,
-});
-
-export const APPKIT_CHAINS = [
+export const APPKIT_CHAINS: [AppKitNetwork, ...AppKitNetwork[]] = [
+  polkadot,
   polkadotAssetHub,
   westendAssetHub,
-  ethMainnet,
-  sepolia,
-  ethWestendAssetHub,
-  moonbaseAlpha,
+  viemChainToWalletConnectChain(viemChains.sepolia),
+  viemChainToWalletConnectChain(viemChains.moonbaseAlpha),
+  viemChainToWalletConnectChain(viemChains.mainnet),
+  viemChainToWalletConnectChain(viemChains.westendAssetHub),
 ];
 
 export const VIEM_CHAINS_BY_ID: Record<number, viemChains.Chain> =
   Object.fromEntries(Object.values(viemChains).map((c) => [c.id, c]));
+
+// maps a chain id to a papi descriptor key
+export const APPKIT_CHAIN_ID_TO_DOT_CHAIN_ID: Record<string, PolkadotChainId> =
+  {
+    "91b171bb158e2d3848fa23a9f1c25182": "polkadot",
+    "68d56f15f85d3136970ec16946040bc1": "polkadotAssetHub",
+    "67f9723393ef76214df0118c34bbbd3d": "westendAssetHub",
+  };

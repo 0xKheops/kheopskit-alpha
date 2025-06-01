@@ -1,4 +1,8 @@
-import { polkadotAssetHub, westendAssetHub } from "@polkadot-api/descriptors";
+import {
+  polkadot,
+  polkadotAssetHub,
+  westendAssetHub,
+} from "@polkadot-api/descriptors";
 
 import type { TypedApi } from "polkadot-api";
 import { createClient } from "polkadot-api";
@@ -6,11 +10,13 @@ import { getWsProvider } from "polkadot-api/ws-provider/web";
 import { metadataCache } from "./metadataCache";
 
 const DESCRIPTORS = {
+  polkadot,
   polkadotAssetHub,
   westendAssetHub,
 };
 
 const RPCS = {
+  polkadot: "wss://polkadot-asset-hub-rpc.polkadot.io",
   polkadotAssetHub: "wss://polkadot-asset-hub-rpc.polkadot.io",
   westendAssetHub: "wss://asset-hub-westend-rpc.dwellir.com",
 };
