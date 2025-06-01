@@ -1,6 +1,7 @@
 import { isEthereumAddress } from "./isEthereumAddress";
 import { isSs58Address } from "./isSs58Address";
-import type { AccountAddressType } from "./types";
+
+export type AccountAddressType = "ss58" | "ethereum";
 
 export const getAccountAddressType = (address: string): AccountAddressType => {
   if (address.startsWith("0x")) {

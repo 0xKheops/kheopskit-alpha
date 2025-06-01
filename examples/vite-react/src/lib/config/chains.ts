@@ -1,5 +1,6 @@
 import { type AppKitNetwork, defineChain } from "@reown/appkit/networks";
 
+import type { CaipNetwork } from "@reown/appkit/core";
 import * as viemChains from "viem/chains";
 import type { PolkadotChainId } from "../getPolkadotApi";
 
@@ -64,12 +65,14 @@ export const westendAssetHub = defineChain({
 });
 
 const viemChainToWalletConnectChain = (chain: viemChains.Chain) => {
-  return defineChain({
-    ...chain,
-    id: chain.id.toString(),
-    chainNamespace: "eip155",
-    caipNetworkId: `eip155:${chain.id}`,
-  });
+  return defineChain(
+    structuredClone({
+      ...chain,
+      id: chain.id.toString(),
+      chainNamespace: "eip155",
+      caipNetworkId: `eip155:${chain.id}`,
+    }),
+  );
 };
 
 export const APPKIT_CHAINS: [AppKitNetwork, ...AppKitNetwork[]] = [
@@ -92,3 +95,13 @@ export const APPKIT_CHAIN_ID_TO_DOT_CHAIN_ID: Record<string, PolkadotChainId> =
     "68d56f15f85d3136970ec16946040bc1": "polkadotAssetHub",
     "67f9723393ef76214df0118c34bbbd3d": "westendAssetHub",
   };
+
+export const isPolkadotNetwork = (network: AppKitNetwork): boolean => {
+  const n = network as CaipNetwork;
+  return n.chainNamespace === "polkadot";
+};
+
+export const isEthereumNetwork = (network: AppKitNetwork): boolean => {
+  const n = network as CaipNetwork;
+  return n.chainNamespace === "eip155";
+};

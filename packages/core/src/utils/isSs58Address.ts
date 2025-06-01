@@ -9,7 +9,7 @@ export const isSs58Address = (
     if (!address) return false;
     accountIdEncoder(address);
     return true;
-  } catch (_err) {
+  } catch {
     return false;
   }
 };

@@ -5,7 +5,7 @@ import type {
   PolkadotWallet,
 } from "@/api/types";
 import { type WalletId, getWalletId, parseWalletId } from "@/utils/WalletId";
-import { EXTENSIONS } from "@/utils/extensions";
+import { POLKADOT_EXTENSIONS } from "@/utils/polkadotExtensions";
 import { isEqual } from "lodash";
 import {
   type InjectedExtension,
@@ -72,7 +72,7 @@ export const polkadotInjectedWallets$ = new Observable<
         return walletIds.map((id): PolkadotInjectedWallet => {
           const { identifier } = parseWalletId(id);
           const extension = enabledExtensions.get(id);
-          const extInfo = EXTENSIONS[identifier];
+          const extInfo = POLKADOT_EXTENSIONS[identifier];
 
           return {
             id,

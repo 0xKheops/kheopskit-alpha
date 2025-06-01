@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import { useLocalStorageConfig } from "@/lib/config/configStore";
+import { usePlaygroundConfig } from "@/lib/config/playgroundConfig";
 import { wagmiConfig } from "@/lib/wagmi";
 import { KheopskitProvider } from "@kheopskit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ const queryClient = new QueryClient();
 export const App = () => {
   // IMPORTANT config should be hardcoded
   // This hook allows modifying the config live, but reloads the web page each time it changes.
-  const { config } = useLocalStorageConfig();
+  const { kheopskitConfig: config } = usePlaygroundConfig();
 
   return (
     <WagmiProvider config={wagmiConfig}>

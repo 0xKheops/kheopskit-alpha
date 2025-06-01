@@ -10,8 +10,9 @@ import {
   APPKIT_CHAINS,
   APPKIT_CHAIN_ID_TO_DOT_CHAIN_ID,
   VIEM_CHAINS_BY_ID,
+  isEthereumNetwork,
+  isPolkadotNetwork,
 } from "@/lib/config/chains";
-import { isEthereumNetwork, isPolkadotNetwork } from "@/lib/config/helper";
 import { type PolkadotChainId, getPolkadotApi } from "@/lib/getPolkadotApi";
 import type {
   EthereumAccount,

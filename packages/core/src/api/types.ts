@@ -26,7 +26,6 @@ export type KheopskitConfig = {
      * list of CAIP-13 ids of polkadot-sdk chains
      * see https://docs.reown.com/advanced/multichain/polkadot/dapp-integration-guide#walletconnect-code%2Fcomponent-setup
      */
-    // polkadotChainIds: string[];
     networks: [AppKitNetwork, ...AppKitNetwork[]];
   };
 };

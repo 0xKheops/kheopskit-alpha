@@ -13,7 +13,7 @@
     "build": "pnpm -r build",
     "publish:packages": "pnpm -r publish --tag alpha",
     "format": "pnpm biome format --write .",
-    "postinstall": "pnpm papi"
+    "postinstall": "pnpm papi --whitelist papi-whitelist.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useLocalStorageConfig } from "@/lib/config/configStore";
+import { usePlaygroundConfig } from "@/lib/config/playgroundConfig";
 import type { WalletPlatform } from "@kheopskit/core";
 import { useCallback } from "react";
 import { AppBlock } from "./AppBlock";
@@ -10,19 +10,49 @@ export const Config = () => (
     <div className="flex flex-col gap-4">
       <Platforms />
       <AutoReconnect />
+      <WalletConnect />
       <Reset />
     </div>
   </AppBlock>
 );
 
+const WalletConnect = () => {
+  const { demoConfig, setWalletConnect } = usePlaygroundConfig();
+
+  return (
+    <div className="items-top flex space-x-2">
+      <Checkbox
+        id="walletConnect"
+        checked={demoConfig.walletConnect}
+        onCheckedChange={(checked) => {
+          if (typeof checked !== "boolean") return;
+          setWalletConnect(checked);
+          window.location.reload();
+        }}
+      />
+      <div className="grid gap-1.5 leading-none">
+        <label
+          htmlFor="walletConnect"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          WalletConnect
+        </label>
+        <p className="text-sm text-muted-foreground">
+          Allows connecting with mobile wallets using QR codes
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const AutoReconnect = () => {
-  const { config, setAutoReconnect } = useLocalStorageConfig();
+  const { demoConfig, setAutoReconnect } = usePlaygroundConfig();
 
   return (
     <div className="items-top flex space-x-2">
       <Checkbox
         id="autoReconnect"
-        checked={config.autoReconnect}
+        checked={demoConfig.autoReconnect}
         onCheckedChange={(checked) => {
           if (typeof checked !== "boolean") return;
           setAutoReconnect(checked);
@@ -50,7 +80,7 @@ const PLATFORMS: Record<WalletPlatform, string> = {
 };
 
 const Platforms = () => {
-  const { config, setPlatformEnabled } = useLocalStorageConfig();
+  const { demoConfig, setPlatformEnabled } = usePlaygroundConfig();
 
   return (
     <div className="items-top flex space-x-2">
@@ -63,7 +93,7 @@ const Platforms = () => {
           <div key={platform} className="flex items-center space-x-2">
             <Checkbox
               id={platform}
-              checked={config.platforms?.includes(platform)}
+              checked={demoConfig.platforms?.includes(platform)}
               onCheckedChange={(checked) => {
                 if (typeof checked !== "boolean") return;
                 setPlatformEnabled(platform, checked);
