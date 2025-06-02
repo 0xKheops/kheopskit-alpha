@@ -13,7 +13,8 @@
     "build": "pnpm -r build",
     "publish:packages": "pnpm -r publish --tag alpha",
     "format": "pnpm biome format --write .",
-    "postinstall": "pnpm papi --whitelist papi-whitelist.ts"
+    "postinstall": "pnpm papi --whitelist papi-whitelist.ts",
+    "clean": "pnpm --filter @kheopskit/core clean && pnpm --filter @kheopskit/react clean && pnpm --filter vite-react clean && pnpm run clean && rm -rf ./.papi/descriptors/dist && rm -rf node_modules"
   },
   "keywords": [],
   "author": "",

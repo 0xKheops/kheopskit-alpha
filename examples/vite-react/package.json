@@ -16,7 +16,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "twinit": "tailwindcss init"
+    "twinit": "tailwindcss init",
+    "clean": "rm -rf ./dist && rm -rf ./node_modules"
   },
   "dependencies": {
     "@kheopskit/core": "workspace:*",
